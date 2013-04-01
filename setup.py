@@ -25,6 +25,8 @@ setup(name='mtj.flask.evetracker',
       install_requires=[
           'setuptools',
           # -*- Extra requirements: -*-
+          'flask',
+          'mtj.eve.tracker',
       ],
       entry_points="""
       # -*- Entry points: -*-
