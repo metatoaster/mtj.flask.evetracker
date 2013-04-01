@@ -1,0 +1,84 @@
+{% extends "layout.jinja" %}
+
+{% block container %}
+
+      <h1>Tower Listing</h1>
+
+      <div id="pos_overview">
+
+        <table class="table table-bordered table-condensed">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>State</th>
+              <th>Tower</th>
+              <th>Region</th>
+              <th>Moon</th>
+              <th>Offline @</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+
+      </div>
+
+{% endblock %}
+
+{% block script %}
+
+    $(document).ready(function() {
+        // Change this to the root of mtj.eve.tracker.frontend.json provider
+        var host = 'http://localhost:8000/json';
+        var values = [];
+
+        $.get(host + '/overview', function(data) {
+            for (var key in data) {
+                var item = data[key];
+                var value = [
+                    item.id + '',  // workaround for string based sorting.
+                    item.stateName,
+                    item.typeName,
+                    item.regionName,
+                    item.celestialName,
+                    item.offlineAtFormatted
+                ];
+                values.push(value);
+            }
+            populateTable(values);
+        });
+    });
+
+    function populateTable(values) {
+        $('#pos_overview').TidyTable({
+            enableCheckbox : false,
+            enableMenu     : false,
+            tableClass     : "table table-bordered table-condensed"
+        },
+        {
+            columnTitles : [
+                'ID', 'State', 'Tower', 'Region', 'Moon', 'Offline @'],
+            columnValues : values,
+
+            // do something with selected rows
+            menuOptions : [
+                ['Option 1', { callback : doSomething1 }],
+                ['Option 2', { callback : doSomething2 }]
+            ]
+        }, doSomething3);
+    }
+
+    // do something with selected results
+    function doSomething1(rows) {
+        alert('callback1(rows=' + rows.length + "')");
+    }
+
+    function doSomething2(rows) {
+        alert('callback2(rows=' + rows.length + "')");
+    }
+
+    function doSomething3(name, value) {
+        //alert("callback(name='" + name + "', value='" + value + "')");
+    }
+
+{% endblock %}
