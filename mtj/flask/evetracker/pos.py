@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from flask import Blueprint, Flask, request, make_response, render_template
+from flask import Blueprint, Flask, request, g, make_response, render_template
 
 
 # template
@@ -25,12 +25,20 @@ def overview_index():
     return response
 
 
-# Pos details
+# Towers.
 
-details = Blueprint('details', 'mtj.flask.evetracker.details')
+tower = Blueprint('tower', 'mtj.flask.evetracker.tower')
 
-@details.route('/')
-def home_index():
-    result = render_template('index.jinja')
+@tower.route('/')
+def tower_overview_index():
+    # TODO figure out how to share this with above overview?
+    result = render_template('overview.jinja')
+    response = make_response(result)
+    return response
+
+@tower.route('/<int:tower_id>')
+def tower_index(tower_id):
+    g.tower_id = tower_id
+    result = render_template('tower.jinja')
     response = make_response(result)
     return response
