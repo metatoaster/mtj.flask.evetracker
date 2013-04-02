@@ -9,6 +9,7 @@ app = Flask('mtj.flask.evetracker')
 @app.before_request
 def before_request():
     g.navbar = app.blueprints.keys()
+    g.json_root = 'http://localhost:8000/json'
 
 @app.teardown_request
 def teardown_request(exception):

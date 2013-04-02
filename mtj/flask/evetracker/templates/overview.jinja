@@ -28,8 +28,7 @@
 {% block script %}
 
     $(document).ready(function() {
-        // Change this to the root of mtj.eve.tracker.frontend.json provider
-        var host = 'http://localhost:8000/json';
+        var host = '{{ g.json_root }}';
         var values = [];
 
         $.get(host + '/overview', function(data) {
@@ -39,7 +38,7 @@
                 return null;
             }
 
-            towers = data.towers
+            var towers = data.towers;
 
             for (var key in towers) {
                 var item = towers[key];
