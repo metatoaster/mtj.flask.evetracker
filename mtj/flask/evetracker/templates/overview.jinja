@@ -33,8 +33,16 @@
         var values = [];
 
         $.get(host + '/overview', function(data) {
-            for (var key in data) {
-                var item = data[key];
+            if (data.error) {
+                // XXX proper error messaging
+                populateTable([data.error]);
+                return null;
+            }
+
+            towers = data.towers
+
+            for (var key in towers) {
+                var item = towers[key];
                 var value = [
                     item.id + '',  // workaround for string based sorting.
                     item.stateName,
