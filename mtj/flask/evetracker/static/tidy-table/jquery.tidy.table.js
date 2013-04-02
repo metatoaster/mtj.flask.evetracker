@@ -18,6 +18,8 @@
 			var settings = {
 				enableCheckbox : false,
 				enableMenu     : false,
+				enableSort     : true,
+				firstColspan   : 0,
 				tableClass     : '',
 			};
 
@@ -70,11 +72,8 @@
 
 		// create reusable elements
 		var table = $('<table></table>')
-                table.addClass('tidy_table');
-                table.addClass(data.options.tableClass);
-
-		table.mousedown(function() { return false; });
-		table.mouseover(function() { return false; });
+		table.addClass('tidy_table');
+		table.addClass(data.options.tableClass);
 
 		var thead = $('<thead></thead>'),
 			tbody = $('<tbody></tbody>'),
@@ -90,6 +89,10 @@
 				.append(title)
 				.attr('title', title);
 			row.append(col);
+
+			if (cols.length == 1 && data.options.firstColspan > 1) {
+				col.attr('colspan', data.options.firstColspan);
+			}
 
 			var col_class;
 
@@ -108,14 +111,16 @@
 				col.addClass(col_class);
 			}
 
-			// attach sorting event to each column
-			col.bind('click', {
-				col_number : i,
-				sort_order : col.order
-			},
-			function(event) {
-				sortByColumn(data, config, callback, event.data.col_number, event.data.sort_order);
-			});
+			if (data.options.enableSort) {
+			      // attach sorting event to each column
+			      col.bind('click', {
+				      col_number : i,
+				      sort_order : col.order
+			      },
+			      function(event) {
+				      sortByColumn(data, config, callback, event.data.col_number, event.data.sort_order);
+			      });
+			}
 		}
 
 		thead.append(row);
@@ -348,3 +353,5 @@
 		return b - a;
 	}
 })(jQuery);
+
+// vim: set noexpandtab:
