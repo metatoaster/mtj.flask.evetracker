@@ -85,7 +85,7 @@
     }
 
     function doSomething3(name, value) {
-        window.location.href = '/tower/' + name;
+        window.location.href = '{{ request.script_root }}/tower/' + name;
         //alert("callback(name='" + name + "', value='" + value + "')");
     }
 

@@ -33,14 +33,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="/">POS Tracker</a>
+          <a class="brand" href="{{ request.script_root }}">POS Tracker</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
               {% for item in g.navbar %}
                 {% if request.blueprint == item %}
-                  <li class="active"><a href="/{{ item }}/">{{ item }}</a></li>
+                  <li class="active"><a href="{{ request.script_root }}/{{ item }}/">{{ item }}</a></li>
                 {% else %}
-                  <li><a href="/{{ item }}/">{{ item }}</a></li>
+                  <li><a href="{{ request.script_root }}/{{ item }}/">{{ item }}</a></li>
                 {% endif %}
               {% endfor %}
             </ul>
