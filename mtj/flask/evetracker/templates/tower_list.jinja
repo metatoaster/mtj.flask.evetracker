@@ -14,7 +14,8 @@
               <th>Tower</th>
               <th>Region</th>
               <th>Moon</th>
-              <th>Offline @</th>
+              <th>Offline at</th>
+              <th>Offline in</th>
             </tr>
           </thead>
           <tbody>
@@ -43,12 +44,16 @@
             for (var key in towers) {
                 var item = towers[key];
                 var value = [
-                    item.id + '',  // workaround for string based sorting.
+                    item.id,
                     item.stateName,
                     item.typeName,
                     item.regionName,
                     item.celestialName,
-                    item.offlineAtFormatted
+                    item.offlineAtFormatted,
+                    {
+                        'col_value': item.timeRemainingFormatted,
+                        'value': item.timeRemaining
+                    }
                 ];
                 values.push(value);
             }
@@ -64,7 +69,8 @@
         },
         {
             columnTitles : [
-                'ID', 'State', 'Tower', 'Region', 'Moon', 'Offline @'],
+                'ID', 'State', 'Tower', 'Region', 'Moon', 'Offline at',
+                'Offline in'],
             columnValues : values,
 
             // do something with selected rows

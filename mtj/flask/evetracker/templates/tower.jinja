@@ -6,66 +6,83 @@
 
       <div class="row">
 
-        <div class="span6" id="tower_info">
-          <table class="table table-bordered table-condensed">
-            <thead>
-              <tr>
-                <th>Overview</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
+        <div class="span5">
+
+          <div id="tower_info">
+            <table class="table table-bordered table-condensed">
+              <thead>
+                <tr>
+                  <th>Overview</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+
         </div>
 
-        <div class="span6" id="fuel_info">
-          <table class="table table-bordered table-condensed">
-            <thead>
-              <tr>
-                <th>Fuel</th>
-                <th>Delta</th>
-                <th>Value</th>
-                <th>Optimal</th>
-                <th>Difference</th>
-                <th>Time Remaining</th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
+        <div class="span7">
+          <h4>Fuel Overview</h4>
+
+          <div id="fuel_info">
+            <table class="table table-bordered table-condensed">
+              <thead>
+                <tr>
+                  <th>Fuel</th>
+                  <th>Delta</th>
+                  <th>Value</th>
+                  <th>Optimal</th>
+                  <th>Difference</th>
+                  <th>Time Remaining</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+
         </div>
 
       </div>
 
       <div class="row">
 
-        <div class="span4" id="tower_log">
-          <table class="table table-bordered table-condensed">
-            <thead>
-              <tr>
-                <th>State</th>
-                <th>Timestamp</th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
+        <div class="span5">
+          <h4>Tower log entries</h4>
+
+          <div id="tower_log">
+            <table class="table table-bordered table-condensed">
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <div class="span8" id="fuel_log">
-          <table class="table table-bordered table-condensed">
-            <thead>
-              <tr>
-                <th>Fuel</th>
-                <th>Delta</th>
-                <th>Value</th>
-                <th>Timestamp</th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
+        <div class="span7">
+          <h4>Fuel log entries</h4>
+
+          <div id="fuel_log">
+            <table class="table table-bordered table-condensed">
+              <thead>
+                <tr>
+                  <th>Fuel</th>
+                  <th>Delta</th>
+                  <th>Value</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
         </div>
 
       </div>
@@ -120,7 +137,8 @@
                 var value = [
                     // string casting to work around sort.
                     item.stateName,
-                    item.timestampFormatted
+                    item.timestampFormatted,
+                    item.stateTimestampFormatted,
                 ];
                 tower_logs.push(value);
             }
@@ -156,13 +174,13 @@
 
     function populateFuelLog(values) {
         populateTable('#fuel_log',
-            ['Fuel', 'Delta', 'Value', 'Timestamp'],
+            ['Fuel', 'Delta', 'Value', 'Added @'],
             values);
     }
 
     function populateTowerLog(values) {
         populateTable('#tower_log',
-            ['State', 'Timestamp'],
+            ['State', 'State Time', 'Added @'],
             values);
     }
 
