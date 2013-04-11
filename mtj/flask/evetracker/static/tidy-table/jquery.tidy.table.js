@@ -133,7 +133,12 @@
 
 			for (var k = 0; k < vals[j].length; k++) {
 				var row_name  = vals[j][0],
-					col_value = vals[j][k];
+					raw_value = vals[j][k],
+					col_value = raw_value;
+
+				if (typeof raw_value === "object") {
+					col_value = raw_value.col_value;
+				}
 
 				var col = $('<td></td>')
 					.append(col_value)
@@ -322,13 +327,27 @@
 	/*
 	 * Display results ordered by selected column
 	 */
+
+	function resolveSortValue(value) {
+		if (typeof value === 'string') {
+		      return value.replace(/$|%|#/g, '');
+		}
+		else if (typeof value === 'number') {
+		      return value;
+		}
+		else if (typeof value === 'object') {
+		      return value.value;
+		}
+	}
+
+
 	function sortByColumn(data, config, callback, num, order) {
 		var reverse = (order == 'desc') ? -1 : 1;
 
 		// sort JSON object by bucket number
 		config.columnValues.sort(function(a, b) {
-			var str1 = a[num].replace(/$|%|#/g, ''),
-				str2 = b[num].replace(/$|%|#/g, '');
+			var str1 = resolveSortValue(a[num]),
+				str2 = resolveSortValue(b[num]);
 
 			if (isNaN(str1) ) {
 				return [reverse * cmpAny(str1, str2)] >
