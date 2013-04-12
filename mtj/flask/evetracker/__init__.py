@@ -9,13 +9,14 @@ app = Flask('mtj.flask.evetracker')
 
 @app.before_request
 def before_request():
-    g.navbar = app.blueprints.keys()
+    g.navbar = app.config['MTJ_FLASK_NAV']
     g.json_root = 'http://localhost:8000/json'
 
 @app.teardown_request
 def teardown_request(exception):
     pass
 
-app.register_blueprint(pos.overview, url_prefix='/overview')
-app.register_blueprint(pos.tower, url_prefix='/tower')
+util.register_blueprint_navbar(app, pos.overview, url_prefix='/overview')
+util.register_blueprint_navbar(app, pos.tower, url_prefix='/tower')
+
 app.wsgi_app = util.ReverseProxied(app.wsgi_app)

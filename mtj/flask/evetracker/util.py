@@ -40,3 +40,12 @@ class ReverseProxied(object):
         if scheme:
             environ['wsgi.url_scheme'] = scheme
         return self.app(environ, start_response)
+
+
+def register_blueprint_navbar(app, blueprint, url_prefix, **kw):
+    app.register_blueprint(blueprint, url_prefix=url_prefix, **kw)
+    nav = app.config.get('MTJ_FLASK_NAV')
+    if not nav:
+        nav = []
+        app.config['MTJ_FLASK_NAV'] = nav
+    nav.append((blueprint.name, url_prefix))
