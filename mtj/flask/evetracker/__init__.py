@@ -32,3 +32,6 @@ util.register_blueprint_navbar(app, pos.overview, url_prefix='/overview')
 util.register_blueprint_navbar(app, pos.tower, url_prefix='/tower')
 
 app.wsgi_app = util.ReverseProxied(app.wsgi_app)
+
+# Uncomment if debug:
+#app.wsgi_app = util.PdbPostMortemLayer(app.wsgi_app)

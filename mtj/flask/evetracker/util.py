@@ -42,6 +42,20 @@ class ReverseProxied(object):
         return self.app(environ, start_response)
 
 
+class PdbPostMortemLayer(object):
+
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        try:
+            return self.app(environ, start_response)
+        except:
+            import pdb
+            pdb.post_mortem()
+            raise
+
+
 def register_blueprint_navbar(app, blueprint, url_prefix, **kw):
     app.register_blueprint(blueprint, url_prefix=url_prefix, **kw)
     nav = app.config.get('MTJ_FLASK_NAV')
