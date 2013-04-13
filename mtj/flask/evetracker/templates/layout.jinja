@@ -18,6 +18,7 @@
     </style>
     <link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='assets/css/jquery.tidy.table.mtj.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='assets/css/mtj.flask.evetracker.css') }}" rel="stylesheet">
 
     <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.png') }}">
 
@@ -36,6 +37,7 @@
           <a class="brand" href="{{ request.script_root }}">POS Tracker</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
+
               {% for name, prefix in g.navbar %}
                 {% if request.blueprint == name %}
                   <li class="active"><a href="{{ request.script_root }}{{ prefix }}/">{{ name }}</a></li>
@@ -43,6 +45,14 @@
                   <li><a href="{{ request.script_root }}{{ prefix }}/">{{ name }}</a></li>
                 {% endif %}
               {% endfor %}
+
+            </ul>
+            <ul class="nav pull-right">
+
+              {% for name, prefix in g.aclbar %}
+                <li><a href="{{ request.script_root }}{{ prefix }}">{{ name }}</a></li>
+              {% endfor %}
+
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -50,6 +60,11 @@
     </div>
 
     <div class="container">
+      <div class="row">
+        {% for message in get_flashed_messages() %}
+          <div class="flash">{{ message }}</div>
+        {% endfor %}
+      </div>
 
     {% block container %}{% endblock %}
 

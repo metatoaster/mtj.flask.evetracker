@@ -1,0 +1,24 @@
+{% extends "layout.jinja" %}
+
+{% block container %}
+
+    <form method="post" class="form-login">
+      {% if error_msg %}
+      <p class="text-error"><span class="label label-important">Error</span>
+        {{ error_msg }}
+      </p>
+      {% endif %}
+      <h2 class="form-login-heading">Please log in</h2>
+      <input type="text" class="input-block-level"
+          placeholder="Login" name="login">
+      <input type="password" class="input-block-level"
+          placeholder="Password" name="password">
+      <!--
+      <label class="checkbox">
+        <input type="checkbox" value="remember-me"> Remember me
+      </label>
+      -->
+      <button class="btn btn-large btn-primary" type="submit">Login</button>
+    </form>
+
+{% endblock %}
