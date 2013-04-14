@@ -8,14 +8,6 @@
     <meta name="author" content="">
 
     <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-    <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-      }
-      .navbar .nav {
-        text-transform: capitalize;
-      }
-    </style>
     <link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='assets/css/jquery.tidy.table.mtj.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='assets/css/mtj.flask.evetracker.css') }}" rel="stylesheet">
@@ -47,7 +39,7 @@
               {% endfor %}
 
             </ul>
-            <ul class="nav pull-right">
+            <ul class="nav pull-right mtj-user">
 
               {% for name, prefix in g.aclbar %}
                 <li><a href="{{ request.script_root }}{{ prefix }}">{{ name }}</a></li>
