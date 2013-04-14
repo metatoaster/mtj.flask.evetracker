@@ -16,8 +16,8 @@ class EveTrackerTestCase(TestCase):
         os.unlink(app.config['DATABASE'])
 
     def test_home(self):
-        rv = self.app.get('/tower/')
-        assert 'Tower Listing' in rv.data
+        rv = self.app.get('/')
+        self.assertTrue('POS Tracker' in rv.data)
 
 
 def test_suite():
