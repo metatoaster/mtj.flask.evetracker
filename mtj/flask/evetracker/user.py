@@ -26,9 +26,12 @@ def login():
     error = None
     login = request.form['login']
     password = request.form['password']
-    if acl_back.validate(login, password):
+    user = acl_back.authenticate(login, password)
+
+    if user:
         session['logged_in'] = True
-        flash('You were logged in')
+        session['mtj.user'] = user
+        flash('Welcome %s' % user['user'])
         return redirect(request.script_root)
     else:
         error = 'Invalid credentials'
@@ -37,10 +40,30 @@ def login():
     response = make_response(result)
     return response
 
-
 @acl_front.route('/logout')
 def logout():
-    session.pop('logged_in', None)
+    if session.get('logged_in'):
+        session.pop('logged_in', None)
+        session.pop('mtj.user', None)
+        # cripes bad way to display a message while ensuring the nav
+        # elements for logged in users are not displayed.
+        return redirect(url_for('acl_front.logout'))
     result = render_template('logout.jinja')
     response = make_response(result)
     return response
+
+@acl_front.route('/current')
+def current():
+    result = render_template('user.jinja', user=getCurrentUser())
+    response = make_response(result)
+    return response
+
+
+# helpers:
+
+def getCurrentUser():
+    user = session.get('mtj.user')
+    if isinstance(user, dict):
+        return user.get('user', 'Anonymous')
+    else:
+        return 'Anonymous'

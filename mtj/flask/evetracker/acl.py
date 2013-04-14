@@ -3,22 +3,13 @@ class BaseAcl(object):
     def __init__(self, *a, **kw):
         pass
 
-    def validate(self, login, password):
-        return False
-
-
-class SetupAcl(object):
-    def __init__(self, login, password):
-        self.login = login
-        self.password = password
-
     def authenticate(self, login, password):
         if self.validate(login, password):
             return self.getAccess(login)
         return False
 
     def validate(self, login, password):
-        return self.login == login and self.password == password
+        return False
 
     def getAccess(self, login):
         return {
@@ -27,10 +18,22 @@ class SetupAcl(object):
         }
 
     def getUserGroups(self, user):
+        return []
+
+
+class SetupAcl(BaseAcl):
+    def __init__(self, login, password):
+        self.login = login
+        self.password = password
+
+    def validate(self, login, password):
+        return self.login == login and self.password == password
+
+    def getUserGroups(self, user):
         return ['admin']
 
 
-class SqlAlchemy(object):
+class SqlAcl(BaseAcl):
 
     def __init__(self, src):
         self.src = src

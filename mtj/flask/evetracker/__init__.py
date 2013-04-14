@@ -25,7 +25,10 @@ def before_request():
 
 def set_logged_in_g():
     g.navbar = app.config['MTJ_FLASK_NAV']
-    g.aclbar = [('log out', '/acl/logout')]
+    g.aclbar = [
+        (user.getCurrentUser(), '/acl/current'),
+        ('logout', '/acl/logout'),
+    ]
 
     json_prefix = app.config.get('MTJPOSTRACKER_JSON_PREFIX', 'json')
 
