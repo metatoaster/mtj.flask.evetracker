@@ -1,5 +1,11 @@
-body {
+#content {
   padding-top: 60px;
+}
+
+@media (max-width: 979px) {
+    #content {
+      padding-top: 0px;
+    }
 }
 
 .navbar .nav {
