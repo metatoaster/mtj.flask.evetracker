@@ -2,12 +2,12 @@
 
 {% block container %}
 
-    <form method="post" class="form-login">
-      {% if error_msg %}
-      <p class="text-error"><span class="label label-important">Error</span>
+    {% if error_msg %}
+      <p class="login-alert text-error alert alert-error"><span class="label label-important">Error</span>
         {{ error_msg }}
       </p>
-      {% endif %}
+    {% endif %}
+    <form method="post" class="form-login">
       <h2 class="form-login-heading">Please log in</h2>
       <input type="text" class="input-block-level"
           placeholder="Login" name="login">

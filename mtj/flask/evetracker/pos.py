@@ -7,7 +7,7 @@ from flask import Blueprint, Flask, request, g, make_response, render_template
 
 home = Blueprint('home', 'mtj.flask.evetracker.home')
 overview = Blueprint('overview', 'mtj.flask.evetracker.overview')
-tower = Blueprint('tower', 'mtj.flask.evetracker.tower')
+tower = Blueprint('towers', 'mtj.flask.evetracker.tower')
 
 @home.route('/')
 def home_index():
