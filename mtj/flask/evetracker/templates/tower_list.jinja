@@ -2,9 +2,20 @@
 
 {% block container %}
 
-      <h1>Tower Listing</h1>
+      <div id="pos">
+        <p class="row form-inline tower-filter">
+          <strong>Filters</strong>
+          <span class="offset1">
+            <input id="region" type="text" placeholder="Region" />
+            <input id="celestial" type="text" placeholder="Moon" />
+          </span>
+          <span class="span2 pull-right">
+            <button type="button" id="showAll" class="btn btn-primary"
+                data-toggle="button">Toggle Outdated</button>
+          </span>
+        </p>
 
-      <div id="pos_overview">
+        <div id="pos_overview">
 
         <table class="table table-bordered table-condensed">
           <thead>
@@ -22,46 +33,81 @@
           </tbody>
         </table>
 
+        </div>
       </div>
 
 {% endblock %}
 
 {% block script %}
 
+    var towers = [];
+    var regions = [];
+    var filterRegion = null;
+    var filterCelestial = null;
+    var celestials = [];
+
     $(document).ready(function() {
         var host = '{{ g.json_root }}';
-        var values = [];
 
         $.get(host + '/tower', function(data) {
             if (data.error) {
                 // XXX proper error messaging
-                populateTable([data.error]);
+                // alert(data.error)
                 return null;
             }
 
-            var towers = data.towers;
-
-            for (var key in towers) {
-                var item = towers[key];
-                var value = [
-                    item.id,
-                    item.stateName,
-                    item.typeName,
-                    item.regionName,
-                    item.celestialName,
-                    item.offlineAtFormatted,
-                    {
-                        'col_value': item.timeRemainingFormatted,
-                        'value': item.timeRemaining
-                    }
-                ];
-                values.push(value);
-            }
-            populateTable(values);
+            towers = data.towers;
+            _populateTowers(false);
+            $('#showAll').bind('click', function() {
+                var showAll = (!$('#showAll').hasClass('active'));
+                _populateTowers(showAll);
+            });
         });
     });
 
-    function populateTable(values) {
+    function populateTowers() {
+        var showAll = ($('#showAll').hasClass('active'));
+        _populateTowers(showAll);
+    }
+
+    function _populateTowers(showAll) {
+        var values = [];
+        regions = [];
+        celestials = [];
+
+        for (var key in towers) {
+            var item = towers[key];
+            var value = [
+                item.id,
+                item.stateName,
+                item.typeName,
+                item.regionName,
+                item.celestialName,
+                item.offlineAtFormatted,
+                {
+                    'col_value': item.timeRemainingFormatted,
+                    'value': item.timeRemaining
+                }
+            ];
+            if ((item.apiTimestamp != null) || showAll) {
+                if (regions.indexOf(item.regionName) < 0) {
+                    regions.push(item.regionName);
+                }
+                if (celestials.indexOf(item.celestialName) < 0) {
+                    celestials.push(item.celestialName);
+                }
+                if ((item.regionName.toLowerCase().indexOf(
+                            $('#region').val().toLowerCase()) > -1) &&
+                        (item.celestialName.toLowerCase().indexOf(
+                            $('#celestial').val().toLowerCase()) > -1)) {
+                    values.push(value);
+                }
+            }
+        }
+
+        regions.sort();
+        celestials.sort();
+
         $('#pos_overview').TidyTable({
             enableCheckbox : false,
             enableMenu     : false,
@@ -79,6 +125,42 @@
                 ['Option 2', { callback : doSomething2 }]
             ]
         }, doSomething3);
+
+        $('#region').typeahead({
+            source: regions,
+            updater: function(item) {
+                filterRegion = item;
+                populateTowers();
+                return item;
+            }
+        });
+
+        $('#celestial').typeahead({
+            source: celestials,
+            updater: function(item) {
+                filterCelestial = item;
+                populateTowers();
+                return item;
+            }
+        });
+
+        $('#region').keyup(function() {
+            hookPopulateTowers('#region', 250)
+        });
+        $('#celestial').keyup(function() {
+            hookPopulateTowers('#celestial', 250)
+        });
+
+    }
+
+    function hookPopulateTowers(target, delay) {
+        var value = $(target).val();
+        setTimeout(function() {
+            if ($(target).val() == value)
+            {
+                populateTowers()
+            }
+        }, delay);
     }
 
     // do something with selected results
