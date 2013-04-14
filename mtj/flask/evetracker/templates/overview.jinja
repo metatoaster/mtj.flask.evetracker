@@ -1,0 +1,126 @@
+{% extends "layout.jinja" %}
+
+{% block container %}
+
+    <h1>Overview</h1>
+
+    <div id="pos_reinforced" class="hide">
+      <h4>Reinforced Towers</h4>
+      <div id="pos_reinforced_table">
+      </div>
+    </div>
+
+    <div id="pos_overview">
+      <h4>Lowest Online Towers</h4>
+      <div id="pos_overview_table">
+        <table class="table table-bordered table-condensed">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>State</th>
+              <th>Tower</th>
+              <th>Region</th>
+              <th>Moon</th>
+              <th>Offline at</th>
+              <th>Offline in</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+
+    $(document).ready(function() {
+        var host = '{{ g.json_root }}';
+        var values = [];
+
+        $.get(host + '/overview', function(data) {
+            if (data.error) {
+                // XXX proper error messaging
+                populateTable([data.error]);
+                return null;
+            }
+
+            var towers = data.online;
+
+            for (var key in towers) {
+                var item = towers[key];
+                var value = [
+                    item.id,
+                    item.stateName,
+                    item.typeName,
+                    item.regionName,
+                    item.celestialName,
+                    item.offlineAtFormatted,
+                    {
+                        'col_value': item.timeRemainingFormatted,
+                        'value': item.timeRemaining
+                    }
+                ];
+                values.push(value);
+            }
+            populateOnline(values);
+
+            values = [];
+            var timestamp = data.timestamp
+            var towers = data.reinforced;
+            for (var key in towers) {
+                var item = towers[key];
+                var value = [
+                    item.id,
+                    item.stateName,
+                    item.typeName,
+                    item.regionName,
+                    item.celestialName,
+                    item.stateTimestampFormatted,
+                    {
+                        'col_value': item.stateTimestampDeltaFormatted,
+                        'value': item.stateTimestamp - timestamp
+                    }
+                ];
+                values.push(value);
+            }
+            populateReinforced(values);
+
+        });
+    });
+
+    function populateReinforced(values) {
+        $('#pos_reinforced').removeClass('hide');
+        $('#pos_reinforced_table').TidyTable({
+            enableCheckbox : false,
+            enableMenu     : false,
+            tableClass     : "table table-bordered table-condensed"
+        },
+        {
+            columnTitles : [
+                'ID', 'State', 'Tower', 'Region', 'Moon', 'Exit at',
+                'Exit in'],
+            columnValues : values,
+        }, doSomething3);
+    }
+
+    function populateOnline(values) {
+        $('#pos_overview_table').TidyTable({
+            enableCheckbox : false,
+            enableMenu     : false,
+            tableClass     : "table table-bordered table-condensed"
+        },
+        {
+            columnTitles : [
+                'ID', 'State', 'Tower', 'Region', 'Moon', 'Offline at',
+                'Offline in'],
+            columnValues : values,
+        }, doSomething3);
+    }
+
+    function doSomething3(name, value) {
+        window.location.href = '{{ request.script_root }}/tower/' + name;
+    }
+
+{% endblock %}

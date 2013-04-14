@@ -15,17 +15,20 @@ def home_index():
     response = make_response(result)
     return response
 
+@overview.route('/')
+def overview_index():
+    result = render_template('overview.jinja')
+    response = make_response(result)
+    return response
 
 @tower.route('/')
-@overview.route('/')  # right now overview shares this.
-def overview_index():
+def tower_index():
     result = render_template('tower_list.jinja')
     response = make_response(result)
     return response
 
-
 @tower.route('/<int:tower_id>')
-def tower_index(tower_id):
+def tower_id(tower_id):
     g.tower_id = tower_id
     result = render_template('tower.jinja')
     response = make_response(result)

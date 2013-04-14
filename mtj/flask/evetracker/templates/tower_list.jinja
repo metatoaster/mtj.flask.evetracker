@@ -32,7 +32,7 @@
         var host = '{{ g.json_root }}';
         var values = [];
 
-        $.get(host + '/overview', function(data) {
+        $.get(host + '/tower', function(data) {
             if (data.error) {
                 // XXX proper error messaging
                 populateTable([data.error]);
