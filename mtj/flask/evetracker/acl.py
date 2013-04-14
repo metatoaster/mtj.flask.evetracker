@@ -12,8 +12,22 @@ class SetupAcl(object):
         self.login = login
         self.password = password
 
+    def authenticate(self, login, password):
+        if self.validate(login, password):
+            return self.getAccess(login)
+        return False
+
     def validate(self, login, password):
         return self.login == login and self.password == password
+
+    def getAccess(self, login):
+        return {
+            'user': login,
+            'groups': self.getUserGroups(login),
+        }
+
+    def getUserGroups(self, user):
+        return ['admin']
 
 
 class SqlAlchemy(object):
