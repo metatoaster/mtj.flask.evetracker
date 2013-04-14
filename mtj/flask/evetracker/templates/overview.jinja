@@ -85,7 +85,9 @@
                 ];
                 values.push(value);
             }
-            populateReinforced(values);
+            if (values.length) {
+                populateReinforced(values);
+            }
 
         });
     });

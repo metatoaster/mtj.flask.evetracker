@@ -102,16 +102,30 @@
             }
 
             var tower = data.tower;
-            populateTower([
+            var tower_values = [
                 ['Celestial', tower.celestialName],
                 ['Region', tower.regionName],
                 ['Tower Type', tower.typeName],
+                ['State', tower.stateName],
                 ['Online Since', tower.onlineSinceFormatted],
                 ['Offline At', tower.offlineAtFormatted],
-                ['State', tower.stateName],
-                ['Reinforcement', tower.reinforcementLengthFormatted],
                 ['Time Remaining', tower.timeRemainingFormatted]
-            ]);
+            ];
+
+            if (tower.state == 3) {
+                tower_values.push(
+                    ['Reinforcement ends at', tower.stateTimestampFormatted],
+                    ['Reinforcement ends in', tower.stateTimestampDeltaFormatted]
+                );
+            }
+
+            if (tower.state == 4) {
+                tower_values.push(
+                    ['Reinforcement', tower.reinforcementLengthFormatted]
+                );
+            }
+
+            populateTower(tower_values);
 
             var fuels = [];
             var fuel = data.fuel;
@@ -137,8 +151,8 @@
                 var value = [
                     // string casting to work around sort.
                     item.stateName,
-                    item.timestampFormatted,
                     item.stateTimestampFormatted,
+                    item.timestampFormatted,
                 ];
                 tower_logs.push(value);
             }
@@ -174,7 +188,7 @@
 
     function populateFuelLog(values) {
         populateTable('#fuel_log',
-            ['Fuel', 'Delta', 'Value', 'Added @'],
+            ['Fuel', 'Delta', 'Value', 'State Time'],
             values);
     }
 
