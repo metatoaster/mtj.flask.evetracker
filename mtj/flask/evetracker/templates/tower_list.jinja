@@ -45,8 +45,8 @@
     var filterRegion = null;
     var filterCelestial = null;
     var celestials = [];
-
-    var searching = false;
+    var lastRegion = null
+    var lastCelestial = null
 
     $(document).ready(function() {
         var host = '{{ g.json_root }}';
@@ -64,12 +64,36 @@
                 var showAll = (!$('#showAll').hasClass('active'));
                 _populateTowers(showAll);
             });
+
+            $('#region').typeahead({
+                source: regions,
+                updater: function(item) {
+                    filterRegion = item;
+                    populateTowers();
+                    return item;
+                }
+            });
+
+            $('#celestial').typeahead({
+                source: celestials,
+                updater: function(item) {
+                    filterCelestial = item;
+                    populateTowers();
+                    return item;
+                }
+            });
+
         });
     });
 
     function populateTowers() {
         var showAll = ($('#showAll').hasClass('active'));
-        _populateTowers(showAll);
+        if ((lastRegion != $('#region').val().toLowerCase()) ||
+                (lastCelestial != $('#celestial').val().toLowerCase())) {
+            _populateTowers(showAll);
+            lastRegion = $('#region').val().toLowerCase();
+            lastCelestial = $('#celestial').val().toLowerCase();
+        }
     }
 
     function _populateTowers(showAll) {
@@ -128,45 +152,21 @@
             ]
         }, doSomething3);
 
-        $('#region').typeahead({
-            source: regions,
-            updater: function(item) {
-                filterRegion = item;
-                populateTowers();
-                return item;
-            }
-        });
-
-        $('#celestial').typeahead({
-            source: celestials,
-            updater: function(item) {
-                filterCelestial = item;
-                populateTowers();
-                return item;
-            }
-        });
-
-        $('#region').keyup(function() {
-            hookPopulateTowers('#region', 250);
-        });
-        $('#celestial').keyup(function() {
-            hookPopulateTowers('#celestial', 250);
-        });
-
     }
 
+    hookPopulateTowers('#region', 250);
+    hookPopulateTowers('#celestial', 250);
+
     function hookPopulateTowers(target, delay) {
-        var value = $(target).val();
-        if (!searching) {
-            searching = true;
+        $(target).keyup(function() {
+            var value = $(target).val();
             setTimeout(function() {
                 if ($(target).val() == value)
                 {
                     populateTowers();
-                    searching = false;
                 }
             }, delay);
-        }
+        });
     }
 
     // do something with selected results
