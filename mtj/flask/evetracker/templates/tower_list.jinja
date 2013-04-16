@@ -83,6 +83,9 @@
                 }
             });
 
+            hookPopulateTowers('#region', 250);
+            hookPopulateTowers('#celestial', 250);
+
         });
     });
 
@@ -153,9 +156,6 @@
         }, doSomething3);
 
     }
-
-    hookPopulateTowers('#region', 250);
-    hookPopulateTowers('#celestial', 250);
 
     function hookPopulateTowers(target, delay) {
         $(target).keyup(function() {
