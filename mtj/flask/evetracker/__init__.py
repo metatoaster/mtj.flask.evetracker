@@ -11,15 +11,27 @@ from mtj.flask.evetracker import user
 
 app = Flask('mtj.flask.evetracker')
 
-white_list = ['acl_front', None]
+public_blueprints = {
+    None: None,
+    'acl_front': None,
+    'json_frontend': ['json_frontend.reload_db'],
+}
 
 @app.before_request
 def before_request():
     if not session.get('logged_in'):
+        # set the nav elements first.
         g.navbar = []
         g.aclbar = [('log in', '/acl/login')]
-        if request.blueprint not in white_list:
-            abort(401)
+
+        if request.blueprint in public_blueprints:
+            paths = public_blueprints[request.blueprint]
+            if paths is None or request.url_rule.endpoint in paths:
+                # Unspecified paths are all whitelists, or it's validated
+                # against the list of permissible endpoints.
+                return
+
+        abort(401)
     else:
         set_logged_in_g()
 
