@@ -69,7 +69,9 @@
                 source: regions,
                 updater: function(item) {
                     filterRegion = item;
-                    populateTowers();
+                    setTimeout(function() {
+                        populateTowers();
+                    }, 10);
                     return item;
                 }
             });
@@ -78,7 +80,9 @@
                 source: celestials,
                 updater: function(item) {
                     filterCelestial = item;
-                    populateTowers();
+                    setTimeout(function() {
+                        populateTowers();
+                    }, 10);
                     return item;
                 }
             });
