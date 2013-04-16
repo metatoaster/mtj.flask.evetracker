@@ -158,12 +158,12 @@
     function hookPopulateTowers(target, delay) {
         var value = $(target).val();
         if (!searching) {
-            searching = True;
+            searching = true;
             setTimeout(function() {
                 if ($(target).val() == value)
                 {
                     populateTowers();
-                    searching = False;
+                    searching = false;
                 }
             }, delay);
         }
