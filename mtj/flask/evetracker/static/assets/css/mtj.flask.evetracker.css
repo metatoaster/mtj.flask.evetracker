@@ -61,3 +61,7 @@
 .hide {
   display: none !important;
 }
+
+.tower-filter .typeahead {
+  background: rgba(255,255,255,.85);
+}
