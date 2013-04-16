@@ -46,6 +46,8 @@
     var filterCelestial = null;
     var celestials = [];
 
+    var searching = false;
+
     $(document).ready(function() {
         var host = '{{ g.json_root }}';
 
@@ -145,22 +147,26 @@
         });
 
         $('#region').keyup(function() {
-            hookPopulateTowers('#region', 250)
+            hookPopulateTowers('#region', 250);
         });
         $('#celestial').keyup(function() {
-            hookPopulateTowers('#celestial', 250)
+            hookPopulateTowers('#celestial', 250);
         });
 
     }
 
     function hookPopulateTowers(target, delay) {
         var value = $(target).val();
-        setTimeout(function() {
-            if ($(target).val() == value)
-            {
-                populateTowers()
-            }
-        }, delay);
+        if (!searching) {
+            searching = True;
+            setTimeout(function() {
+                if ($(target).val() == value)
+                {
+                    populateTowers();
+                    searching = False;
+                }
+            }, delay);
+        }
     }
 
     // do something with selected results
