@@ -3,6 +3,8 @@ from __future__ import absolute_import
 from flask import Blueprint, Flask, request, g, make_response, render_template
 from flask import session, redirect, url_for, abort
 
+from werkzeug.exceptions import HTTPException
+
 from mtj.eve.tracker.frontend.flask import json_frontend
 
 from mtj.flask.evetracker import util
@@ -62,6 +64,24 @@ def app_index():
     result = render_template('index.jinja')
     response = make_response(result)
     return response
+
+@app.errorhandler(401)
+def http_401(error):
+    return render_template('http.401.jinja'), error.code
+
+@app.errorhandler(402)
+@app.errorhandler(403)
+@app.errorhandler(404)
+@app.errorhandler(405)
+@app.errorhandler(406)
+@app.errorhandler(407)
+@app.errorhandler(410)
+def http_401(error):
+    if isinstance(error, HTTPException):
+        return render_template('http.error.jinja', error=error,
+            http_error_msg=error.description), error.code
+    else:
+        raise error
 
 util.register_blueprint_navbar(app, pos.overview, url_prefix='/overview')
 util.register_blueprint_navbar(app, pos.tower, url_prefix='/tower')

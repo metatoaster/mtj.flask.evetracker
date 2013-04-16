@@ -1,0 +1,18 @@
+{% extends "layout.jinja" %}
+
+{% block container %}
+    <div class="alert alert-error">
+      <h3>
+        <strong>401</strong>
+        <span style="font-weight: normal;">Unauthorized</span>
+      </h3>
+      <p>
+        {% if session.get('logged_in') %}
+          You don't have permission to access this resource.
+        {% else %}
+          You are not logged in.
+          <a href="{{ request.script_root }}/acl/login">Please log in</a>.
+        {% endif %}
+      </p>
+    </div>
+{% endblock %}

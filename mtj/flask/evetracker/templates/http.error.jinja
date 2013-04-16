@@ -1,0 +1,11 @@
+{% extends "layout.jinja" %}
+
+{% block container %}
+    <div class="alert alert-error">
+      <h3>
+        <strong>{{ error.code }}</strong>
+        <span style="font-weight: normal;">{{ error.name }}</span>
+      </h3>
+      {{ http_error_msg|safe }}
+    </div>
+{% endblock %}
