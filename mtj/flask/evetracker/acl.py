@@ -31,12 +31,3 @@ class SetupAcl(BaseAcl):
 
     def getUserGroups(self, user):
         return ['admin']
-
-
-class SqlAcl(BaseAcl):
-
-    def __init__(self, src):
-        self.src = src
-
-    def validate(self, login, password):
-        raise NotImplementedError
