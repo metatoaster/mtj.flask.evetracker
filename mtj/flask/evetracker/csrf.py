@@ -2,6 +2,11 @@ import random
 import hmac
 from hashlib import sha1 as sha
 
+from mtj.flask.evetracker import user
+
+csrf_key = '_authenticator'
+
+
 def randstr(b=128):
     try:
         r = random.SystemRandom()
@@ -22,9 +27,16 @@ class Authenticator(object):
 
         self.secret = secret
 
-    def getSecretFor(self, username):
+    def getSecretFor(self, username=None):
         """
         Generate user specific user secret.
         """
 
+        if username is None:
+            username = user.getCurrentUser()
+
         return hmac.new(self.secret, username, sha).hexdigest()
+
+    def render(self, username=None):
+        return '<input type="hidden" name="%s" value="%s" />' % (
+            csrf_key, self.getSecretFor(username))

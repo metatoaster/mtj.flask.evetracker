@@ -7,6 +7,7 @@ from werkzeug.exceptions import HTTPException
 
 from mtj.eve.tracker.frontend.flask import json_frontend
 
+from mtj.flask.evetracker import csrf
 from mtj.flask.evetracker import util
 from mtj.flask.evetracker import pos
 from mtj.flask.evetracker import user
@@ -36,6 +37,18 @@ def before_request():
         abort(401)
     else:
         set_logged_in_g()
+
+@app.before_request
+def csrf_protect():
+    current_user = user.getCurrentUser()
+    if current_user == user.anonymous:
+        # zero protection
+        return
+
+    if request.method == 'POST':
+        token = request.form.get(csrf.csrf_key)
+        if token != app.config.get('MTJ_CSRF').getSecretFor(current_user):
+            abort(403)
 
 def set_logged_in_g():
     g.navbar = app.config['MTJ_FLASK_NAV']

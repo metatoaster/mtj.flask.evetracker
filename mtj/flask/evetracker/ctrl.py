@@ -5,6 +5,7 @@ import importlib
 from mtj.eve.tracker.ctrl import FlaskRunner, Options, main
 from mtj.flask.evetracker import app
 from mtj.flask.evetracker import acl
+from mtj.flask.evetracker import csrf
 
 
 class EveTrackerOptions(Options):
@@ -54,6 +55,9 @@ class EveTrackerRunner(FlaskRunner):
     def prepare(self, app):
         super(EveTrackerRunner, self).prepare(app)
         app.config['MTJ_ACL'] = self.acl
+        # persist the secret so a form rendered before restart works
+        # afterwards, but this maybe a security feature...
+        app.config['MTJ_CSRF'] = csrf.Authenticator()
 
 
 if __name__ == "__main__":

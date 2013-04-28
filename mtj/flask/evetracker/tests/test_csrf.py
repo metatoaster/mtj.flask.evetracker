@@ -14,6 +14,10 @@ class CsrfTestCase(TestCase):
         self.assertEqual(self.csrf.getSecretFor('username'),
             '857c28b1c5f87bfe312fc7df185a782a6bb46cad')
 
+    def test_render(self):
+        self.assertTrue(self.csrf.render('username').startswith(
+            '<input type="hidden"'))
+
 
 def test_suite():
     suite = TestSuite()
