@@ -4,8 +4,21 @@ from flask import flash, url_for, current_app, session, redirect
 # TODO we should move this whole thing into a separate module.
 from mtj.flask.evetracker import acl
 
-
 acl_front = Blueprint('acl_front', 'mtj.flask.evetracker.user.acl')
+
+
+class AnonymousUser(object):
+
+    def __str__(self):
+        return 'Anonymous'
+
+    def __repr__(self):
+        return '<Anonymous>'
+
+anonymous = AnonymousUser()
+
+# Should probably define some encapsulation for users.
+
 
 @acl_front.route('/login', methods=['GET', 'POST'])
 def login():
@@ -66,4 +79,4 @@ def getCurrentUser():
     if isinstance(user, dict):
         return user.get('user', 'Anonymous')
     else:
-        return 'Anonymous'
+        return anonymous
