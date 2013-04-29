@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from flask import Blueprint, Flask, request, g, make_response, render_template
-from flask import session, redirect, url_for, abort
+from flask import session, redirect, url_for, abort, current_app
 
 from werkzeug.exceptions import HTTPException
 
@@ -43,12 +43,13 @@ def csrf_protect():
     current_user = user.getCurrentUser()
     if current_user == user.anonymous:
         # zero protection
-        return
+        return None
 
     if request.method == 'POST':
         token = request.form.get(csrf.csrf_key)
-        if token != app.config.get('MTJ_CSRF').getSecretFor(current_user):
+        if token != current_app.config['MTJ_CSRF'].getSecretFor(current_user):
             abort(403)
+    return True
 
 def set_logged_in_g():
     g.navbar = app.config['MTJ_FLASK_NAV']
