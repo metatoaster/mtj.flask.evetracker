@@ -42,14 +42,13 @@ def before_request():
 def csrf_protect():
     current_user = user.getCurrentUser()
     if current_user == user.anonymous:
-        # zero protection
-        return None
+        # zero protection for anonymous users.
+        return
 
     if request.method == 'POST':
         token = request.form.get(csrf.csrf_key)
         if token != current_app.config['MTJ_CSRF'].getSecretFor(current_user):
             abort(403)
-    return True
 
 def set_logged_in_g():
     g.navbar = app.config['MTJ_FLASK_NAV']

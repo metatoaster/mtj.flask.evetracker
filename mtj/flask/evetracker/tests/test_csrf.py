@@ -55,7 +55,10 @@ class CsrfFlaskTestCase(TestCase):
                 data={'_authenticator':
                     '857c28b1c5f87bfe312fc7df185a782a6bb46cad'}):
             session['mtj.user'] = {'user': 'username'}
-            self.assertTrue(csrf_protect())
+            # could use a better way to test this.
+            # a before_request method cannot return a value as it will
+            # interfere with the wsgi stack.
+            self.assertTrue(csrf_protect() is None)
 
 
 def test_suite():
