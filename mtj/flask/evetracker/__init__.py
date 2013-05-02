@@ -113,5 +113,5 @@ app.wsgi_app = util.ReverseProxied(app.wsgi_app)
 #app.wsgi_app = util.PdbPostMortemLayer(app.wsgi_app)
 #@app.errorhandler(500)
 #def http_500(error):
-#    import pdb;pdb.set_trace()
+#    import pdb;pdb.post_mortem()
 #    raise error
