@@ -45,9 +45,13 @@ def csrf_protect():
         # zero protection for anonymous users.
         return
 
+    g.csrf_input = current_app.config['MTJ_CSRF'].render()
+
     if request.method == 'POST':
         token = request.form.get(csrf.csrf_key)
         if token != current_app.config['MTJ_CSRF'].getSecretFor(current_user):
+            # TODO make this 403 specific to token failure (tell user
+            # to reload the form in case of changes in hash.
             abort(403)
 
 def set_logged_in_g():
@@ -89,7 +93,7 @@ def http_401(error):
 @app.errorhandler(406)
 @app.errorhandler(407)
 @app.errorhandler(410)
-def http_401(error):
+def http_error(error):
     if isinstance(error, HTTPException):
         return render_template('http.error.jinja', error=error,
             http_error_msg=error.description), error.code
