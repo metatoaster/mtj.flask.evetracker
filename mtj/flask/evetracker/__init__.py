@@ -11,6 +11,7 @@ from mtj.flask.evetracker import csrf
 from mtj.flask.evetracker import util
 from mtj.flask.evetracker import pos
 from mtj.flask.evetracker import user
+from mtj.flask.evetracker import audit
 
 app = Flask('mtj.flask.evetracker')
 
@@ -102,6 +103,7 @@ def http_error(error):
 
 util.register_blueprint_navbar(app, pos.overview, url_prefix='/overview')
 util.register_blueprint_navbar(app, pos.tower, url_prefix='/tower')
+util.register_blueprint_navbar(app, audit.audit, url_prefix='/audit')
 
 app.register_blueprint(user.acl_front, url_prefix='/acl')
 

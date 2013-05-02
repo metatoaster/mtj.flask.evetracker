@@ -1,0 +1,23 @@
+{% extends "layout.jinja" %}
+
+{% block container %}
+
+    {% if error_msg %}
+      <p class="text-error alert alert-error"><span class="label label-important">Error</span>
+        {{ error_msg }}
+      </p>
+    {% endif %}
+    <form method="post" class="form">
+      {{ g.csrf_input }}
+      <input type="text" class="input-block-level"
+          placeholder="Class" name="table">
+      <input type="text" class="input-block-level"
+          placeholder="Entry" name="rowid">
+      <input type="text" class="input-block-level"
+          placeholder="Description" name="reason">
+      <input type="text" class="input-block-level"
+          placeholder="Category" name="category_name">
+      <button class="btn btn-primary" type="submit">Add</button>
+    </form>
+
+{% endblock %}
