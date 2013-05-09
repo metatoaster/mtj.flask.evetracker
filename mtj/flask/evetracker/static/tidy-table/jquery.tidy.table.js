@@ -74,6 +74,9 @@
 		var table = $('<table></table>')
 		table.addClass('tidy_table');
 		table.addClass(data.options.tableClass);
+		if (data.options.enableSort) {
+		    table.addClass('sortable');
+		}
 
 		var thead = $('<thead></thead>'),
 			tbody = $('<tbody></tbody>'),
