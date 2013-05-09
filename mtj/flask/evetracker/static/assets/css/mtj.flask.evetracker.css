@@ -63,3 +63,23 @@ form.form-login {
 .form-tower-filter .typeahead {
   background: rgba(255,255,255,.85);
 }
+
+.tower-listing td[title='unanchored'] {
+  background: #777;
+}
+
+.tower-listing td[title='anchored'] {
+  background: #800;
+}
+
+.tower-listing td[title='onlining'] {
+  background: #008;
+}
+
+.tower-listing td[title='reinforced'] {
+  background: #880;
+}
+
+.tower-listing td[title='online'] {
+  background: #080;
+}
