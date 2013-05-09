@@ -138,14 +138,19 @@
 				var row_name  = vals[j][0],
 					raw_value = vals[j][k],
 					col_value = raw_value;
+					title_value = raw_value;
 
 				if (typeof raw_value === "object") {
 					col_value = raw_value.col_value;
+					title_value = raw_value.title_value;
 				}
 
 				var col = $('<td></td>')
 					.append(col_value)
-					.attr('title', col_value);
+					
+				if (title_value) {
+					col.attr('title', title_value);
+				}
 				row.append(col);
 
 				if (typeof callback === 'function') {
