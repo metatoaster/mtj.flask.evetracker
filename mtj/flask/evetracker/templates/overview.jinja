@@ -59,19 +59,30 @@
             var timestamp = data.timestamp
             var towers = data.reinforced;
             for (var key in towers) {
-                var item = towers[key];
+                var tower = towers[key];
                 var value = [
-                    item.id,
-                    item.stateName,
-                    item.typeName,
-                    item.regionName,
-                    item.celestialName,
-                    item.stateTimestampFormatted,
+                    {
+                        'col_value': $('<span class="state-' + tower.stateName +
+                            '"></span>'),
+                        'title_value': tower.stateName,
+                        'value': tower.state
+                    },
+                    tower.typeName,
+                    tower.regionName,
+                    tower.celestialName,
+                    tower.stateTimestampFormatted,
                     {
                         'col_value': item.stateTimestampDeltaFormatted,
                         'value': item.stateTimestamp - timestamp
+                    },
+                    {
+                        'col_value': $('<a href="' + script_root +
+                            '/tower/' + tower.id + '">' +
+                            '<i class="icon-search"></i> details</a>'),
+                        'value': tower.id
                     }
                 ];
+
                 values.push(value);
             }
             if (values.length) {
@@ -86,12 +97,12 @@
         $('#pos_reinforced_table').TidyTable({
             enableCheckbox : false,
             enableMenu     : false,
-            tableClass     : "table table-bordered table-condensed"
+            tableClass     : "table table-bordered table-condensed tower-listing"
         },
         {
             columnTitles : [
-                'ID', 'State', 'Tower', 'Region', 'Moon', 'Exit at',
-                'Exit in'],
+                '', 'Tower', 'Region', 'Moon', 'Exit at',
+                'Exit in', 'Action'],
             columnValues : values,
         }, doSomething3);
     }
