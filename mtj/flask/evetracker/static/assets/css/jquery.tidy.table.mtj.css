@@ -10,12 +10,26 @@
  *    jquery.js
  */
 
+table.tidy_table.sortable th {
+        cursor: pointer;
+}
+
+table.tidy_table.sortable th:after {
+	content: "\02B0D";
+        color: #888;
+        float: right;
+}
+
+table.tidy_table th:hover {
+	background: #f7f7f7 no-repeat right center;
+}
+
 table.tidy_table th.sort_asc {
 	background: #EEEEEE no-repeat right center;
 }
 
 table.tidy_table th.sort_asc:after {
-	content: "\025BC";
+	content: "\02B07";
         color: #888;
         float: right;
 }
@@ -26,7 +40,7 @@ table.tidy_table th.sort_desc {
 
 
 table.tidy_table th.sort_desc:after {
-	content: "\025B2";
+	content: "\02B06";
         color: #888;
         float: right;
 }
