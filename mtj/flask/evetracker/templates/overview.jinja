@@ -67,9 +67,10 @@
                         'title_value': tower.stateName,
                         'value': tower.state
                     },
-                    shortTowerName(tower.typeName),
+                    tower.auditLabel,
                     tower.regionName,
                     tower.celestialName,
+                    shortTowerName(tower.typeName),
                     tower.stateTimestampFormatted,
                     {
                         'col_value': item.stateTimestampDeltaFormatted,
@@ -101,7 +102,7 @@
         },
         {
             columnTitles : [
-                '', 'Tower', 'Region', 'Moon', 'Exit at',
+                '', 'Label', 'Tower', 'Region', 'Moon', 'Exit at',
                 'Exit in', 'Action'],
             columnValues : values,
         }, doSomething3);
@@ -115,7 +116,7 @@
         },
         {
             columnTitles : [
-                '', 'Tower', 'Region', 'Moon', 'Offline at',
+                '', 'Label', 'Tower', 'Region', 'Moon', 'Offline at',
                 'Offline in', 'Action'],
             columnValues : values,
         }, doSomething3);

@@ -12,9 +12,10 @@ function towerToValue(tower, root) {
             'title_value': tower.stateName,
             'value': tower.state
         },
-        shortTowerName(tower.typeName),
+        tower.auditLabel,
         tower.regionName,
         tower.celestialName,
+        shortTowerName(tower.typeName),
         tower.offlineAtFormatted,
         {
             'col_value': tower.timeRemainingFormatted,
