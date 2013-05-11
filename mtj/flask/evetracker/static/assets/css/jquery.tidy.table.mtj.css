@@ -20,7 +20,7 @@ table.tidy_table.sortable th:after {
         float: right;
 }
 
-table.tidy_table th:hover {
+table.tidy_table.sortable th:hover {
 	background: #f7f7f7 no-repeat right center;
 }
 
