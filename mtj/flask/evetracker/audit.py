@@ -21,7 +21,7 @@ def add_audit_form():
     reason = request.form.get('reason')
     category_name = request.form.get('category_name')
     user = current_app.config['MTJ_CURRENT_USER']()
-    backend.addAudit((table, rowid), reason, category_name, user)
+    backend.addAudit((table, rowid), reason, user, category_name)
     result = render_template('audit.jinja')
     response = make_response(result)
     return response

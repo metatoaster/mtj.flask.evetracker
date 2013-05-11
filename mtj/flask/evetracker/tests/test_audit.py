@@ -46,7 +46,7 @@ class AuditTestCase(unittest.TestCase):
 
         result = list(self.backend._conn.execute('select * from audit'))
         self.assertEqual(result[0][:6], (1, u'tower', 1,
-            u"test reason", u'note', u'test_user'))
+            u"test reason", u'test_user', u'note'))
 
 
 if __name__ == '__main__':
