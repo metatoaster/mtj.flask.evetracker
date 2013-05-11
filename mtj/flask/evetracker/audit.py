@@ -8,6 +8,12 @@ from mtj.eve.tracker.interfaces import ITrackerBackend
 audit = Blueprint('audit', 'mtj.flask.evetracker.audit.audit')
 
 
+@audit.route('/')
+def index():
+    result = render_template('audit_index.jinja')
+    response = make_response(result)
+    return response
+
 @audit.route('/add', methods=['GET', 'POST'])
 def add_audit_form():
     if request.method == 'GET':
