@@ -1,3 +1,9 @@
+function shortTowerName(name) {
+    return name.replace('Control Tower Small', 'Small'
+        ).replace('Control Tower Medium', 'Medium'
+        ).replace('Control Tower', 'Large');
+}
+
 function towerToValue(tower, root) {
     return [
         {
@@ -6,7 +12,7 @@ function towerToValue(tower, root) {
             'title_value': tower.stateName,
             'value': tower.state
         },
-        tower.typeName,
+        shortTowerName(tower.typeName),
         tower.regionName,
         tower.celestialName,
         tower.offlineAtFormatted,
