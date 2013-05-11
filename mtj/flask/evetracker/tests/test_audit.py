@@ -48,6 +48,21 @@ class AuditTestCase(unittest.TestCase):
         self.assertEqual(result[0][:6], (1, u'tower', 1,
             u"test reason", u'test_user', u'note'))
 
+    def test_add_audit_table_rowid(self):
+        tower = self.backend.addTower(1000001, 12235, 30004608, 40291202, 4,
+            1325376000, 1306886400, 498125261)
+
+        with self.app.test_request_context():
+            with self.app.test_client() as client:
+                rv = client.post('/audit/add/tower/1', data={
+                    'reason': 'test reason',
+                    'category_name': 'note',
+                })
+
+        result = list(self.backend._conn.execute('select * from audit'))
+        self.assertEqual(result[0][:6], (1, u'tower', 1,
+            u"test reason", u'test_user', u'note'))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -25,3 +25,24 @@ def add_audit_form():
     result = render_template('audit.jinja')
     response = make_response(result)
     return response
+
+@audit.route('/add/<table>/<int:rowid>', methods=['GET', 'POST'])
+def add_audit_form_table_rowid(table, rowid):
+    # TODO 404 on invalid table/rowids
+
+    backend = zope.component.getUtility(ITrackerBackend)
+    categories = backend.getAuditCategories(table)
+
+    if request.method == 'GET':
+        result = render_template('audit_table_id.jinja', categories=categories)
+        response = make_response(result)
+        return response
+
+    reason = request.form.get('reason')
+    category_name = request.form.get('category_name')
+    user = current_app.config['MTJ_CURRENT_USER']()
+    backend.addAudit((table, rowid), reason, user, category_name)
+    # TODO redirect back to the actual entry.
+    result = render_template('audit_table_id.jinja', categories=categories)
+    response = make_response(result)
+    return response
