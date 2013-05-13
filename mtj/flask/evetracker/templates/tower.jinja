@@ -23,7 +23,7 @@
 
         </div>
 
-        <div class="span7">
+        <div class="offset5">
           <h4>Fuel Overview</h4>
 
           <div id="fuel_info">
@@ -36,6 +36,25 @@
                   <th>Optimal</th>
                   <th>Difference</th>
                   <th>Time Remaining</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <div class="offset5">
+          <h4>Comments</h4>
+
+          <div id="tower_comments">
+            <table class="table table-bordered table-condensed">
+              <thead>
+                <tr>
+                  <th>Comment</th>
+                  <th>User</th>
+                  <th>@</th>
                 </tr>
               </thead>
               <tbody>
@@ -145,6 +164,8 @@
             }
             populateFuel(fuels);
 
+            populateAuditCategory(tower.audits.comment);
+
             var tower_logs = [];
             var tower_log = data.tower_log;
             for (var key in tower_log) {
@@ -191,6 +212,25 @@
         populateTable('#fuel_log',
             ['Fuel', 'Delta', 'Value', 'State Time'],
             values);
+    }
+
+    function populateAuditCategory(values) {
+
+        var audits = [];
+        for (var key in values) {
+            var audit = values[key];
+            var value = [
+                // string casting to work around sort.
+                audit.reason,
+                audit.user,
+                audit.timestampFormatted
+            ];
+            audits.push(value);
+        }
+
+        populateTable('#tower_comments',
+            ['Comment', 'User', '@'],
+            audits);
     }
 
     function populateTowerLog(values) {
