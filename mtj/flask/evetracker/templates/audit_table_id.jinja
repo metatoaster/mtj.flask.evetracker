@@ -8,7 +8,7 @@
       </p>
     {% endif %}
     <form method="post" class="form">
-      <h4>Add a note</h4>
+      <h4>Audit an item</h4>
       {{ g.csrf_input }}
       <input type="text" class="input-block-level"
           placeholder="Description" name="reason">
@@ -16,7 +16,7 @@
           name="category_name">
         <option value="">Category</option>
         {% for category in categories %}
-          <option value="{{ category.name }}">{{ category.name }}: {{ category.description }} </option>
+          <option value="{{ category.name }}" {{ 'selected="selected"' if request.args['category_name'] == category.name }}>{{ category.name }}: {{ category.description }} </option>
         {% endfor %}
       </select>
       <button class="btn btn-primary" type="submit">Add</button>
