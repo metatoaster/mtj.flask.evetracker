@@ -17,12 +17,16 @@ table.tidy_table.sortable th {
 
 table.tidy_table.sortable th:after {
 	content: "\02B0D";
-        color: #888;
+        color: #ccc;
         float: right;
 }
 
 table.tidy_table.sortable th:hover {
 	background: #f7f7f7 no-repeat right center;
+}
+
+table.tidy_table.sortable th:hover:after {
+	color: #bbb;
 }
 
 table.tidy_table th.sort_asc {
