@@ -80,7 +80,8 @@
 
 		var thead = $('<thead></thead>'),
 			tbody = $('<tbody></tbody>'),
-			row   = $('<tr></tr>');
+			row   = $('<tr></tr>'),
+			tfoot = $('<tfoot></tfoot>');
 
 		var cols = config.columnTitles;
 
@@ -210,6 +211,13 @@
 				// insert before first cell
 				row.prepend(col);
 			});
+		}
+
+		if (config.tableFoot) {
+			var row = $('<tr></tr>');
+			row.append(config.tableFoot);
+			tfoot.append(row);
+			table.append(tfoot);
 		}
 
 		// if table/menu elements exist, replace them
