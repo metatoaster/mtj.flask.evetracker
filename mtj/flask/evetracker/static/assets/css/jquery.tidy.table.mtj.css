@@ -12,6 +12,7 @@
 
 table.tidy_table.sortable th {
         cursor: pointer;
+        white-space: nowrap;
 }
 
 table.tidy_table.sortable th:after {
