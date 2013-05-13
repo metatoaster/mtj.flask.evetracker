@@ -8,9 +8,10 @@ from mtj.eve.tracker.interfaces import ITrackerBackend
 audit = Blueprint('audit', 'mtj.flask.evetracker.audit.audit')
 
 
-@audit.route('/')
-def index():
-    result = render_template('audit_index.jinja')
+@audit.route('/', defaults={'count': 50})
+@audit.route('/<int:count>')
+def index(count):
+    result = render_template('audit_index.jinja', count=count)
     response = make_response(result)
     return response
 
