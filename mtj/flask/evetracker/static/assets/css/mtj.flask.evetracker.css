@@ -83,3 +83,20 @@ form.form-login {
 .tower-listing td[title='online'] {
   background: #080;
 }
+
+#tower_comments_title a {
+  font-size: 14px;
+  font-weight: normal;
+}
+
+#tower_label a {
+  -webkit-opacity: 0.1;
+     -moz-opacity: 0.1;
+          opacity: 0.1;
+}
+
+#tower_label:hover a {
+  -webkit-opacity: 1;
+     -moz-opacity: 1;
+          opacity: 1;
+}

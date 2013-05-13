@@ -46,7 +46,10 @@
         </div>
 
         <div class="offset5">
-          <h4>Comments</h4>
+          <h4 id="tower_comments_title">Comments
+            <a class="pull-right" href="{{ request.script_root -}}
+                /audit/add/tower/{{- tower_id }}?category_name=comment">
+              <i class="icon-edit"></i> Add Comment</a> </h4>
 
           <div id="tower_comments">
             <table class="table table-bordered table-condensed">
@@ -110,6 +113,8 @@
 
 {% block script %}
 
+    var script_root = '{{ request.script_root }}';
+
     $(document).ready(function() {
         var host = '{{ g.json_root }}';
 
@@ -121,8 +126,22 @@
             }
 
             var tower = data.tower;
+
+            var label = $('<div id="tower_label"></div>');
+            label.text(tower.audits.label[0].reason);
+            label.append('<a href="' + script_root + '/audit/add/tower/' +
+                        tower.id + '?category_name=label" ' +
+                    'class="pull-right">' +
+                    '<i class="icon-edit"></i> edit</a>' +
+                '</div>');
+
             var tower_values = [
-                ['Label', tower.audits.label[0].reason],
+                ['Label',
+                    {
+                        'col_value': label,
+                        'value': tower.audits.label[0].reason
+                    },
+                ],
                 ['Celestial', tower.celestialName],
                 ['Region', tower.regionName],
                 ['Tower Type', tower.typeName],
@@ -216,8 +235,17 @@
 
     function populateAuditCategory(values) {
 
+        var max_index = 3;
         var audits = [];
+        var footer = null;
         for (var key in values) {
+            if (key == max_index) {
+                footer = $('<td colspan="3"><a href="">' +
+                    '<i class="icon-search"></i> View all comments</a>' +
+                '</td>');
+                break;
+            }
+
             var audit = values[key];
             var value = [
                 // string casting to work around sort.
@@ -225,12 +253,15 @@
                 audit.user,
                 audit.timestampFormatted
             ];
+
             audits.push(value);
         }
 
         populateTable('#tower_comments',
             ['Comment', 'User', '@'],
-            audits);
+            audits,
+            footer
+            );
     }
 
     function populateTowerLog(values) {
@@ -239,7 +270,7 @@
             values);
     }
 
-    function populateTable(table_id, titles, values) {
+    function populateTable(table_id, titles, values, footer) {
         $(table_id).TidyTable({
             enableCheckbox : false,
             enableMenu     : false,
@@ -247,7 +278,8 @@
         },
         {
             columnTitles : titles,
-            columnValues : values
+            columnValues : values,
+            tableFoot : footer
         });
     }
 

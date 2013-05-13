@@ -30,6 +30,6 @@ def tower_index():
 @tower.route('/<int:tower_id>')
 def tower_id(tower_id):
     g.tower_id = tower_id
-    result = render_template('tower.jinja')
+    result = render_template('tower.jinja', tower_id=tower_id)
     response = make_response(result)
     return response
