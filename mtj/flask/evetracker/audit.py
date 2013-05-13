@@ -57,3 +57,17 @@ def add_audit_form_table_rowid(table, rowid):
     result = render_template('audit_table_id.jinja', categories=categories)
     response = make_response(result)
     return response
+
+@audit.route('/view/<table>/<int:rowid>')
+def view_audit_table_rowid(table, rowid):
+    # TODO 404 on invalid table/rowids
+
+    backend = zope.component.getUtility(ITrackerBackend)
+    categories = backend.getAuditCategories(table)
+    if not backend.getAuditable(table, rowid):
+        abort(404);
+
+    result = render_template('audit_table_id_view.jinja',
+        table=table, rowid=rowid)
+    response = make_response(result)
+    return response

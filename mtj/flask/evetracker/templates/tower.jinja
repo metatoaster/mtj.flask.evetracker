@@ -114,11 +114,12 @@
 {% block script %}
 
     var script_root = '{{ request.script_root }}';
+    var tower_id = {{ g.tower_id }};
 
     $(document).ready(function() {
         var host = '{{ g.json_root }}';
 
-        $.get(host + '/tower/{{ g.tower_id }}', function(data) {
+        $.get(host + '/tower/' + tower_id, function(data) {
             if (data.error) {
                 // XXX proper error messaging
                 populateTable([data.error]);
@@ -218,7 +219,11 @@
     });
 
     function populateTower(values) {
-        populateDataTable('#tower_info', ['Overview'], values);
+        var footer = $('<td colspan="2"><a href="' + script_root +
+                '/audit/view/tower/' + tower_id + '">' +
+            '<i class="icon-search"></i> Review Audits</a>' +
+        '</td>');
+        populateDataTable('#tower_info', ['Overview'], values, footer);
     }
 
     function populateFuel(values) {
@@ -240,7 +245,8 @@
         var footer = null;
         for (var key in values) {
             if (key == max_index) {
-                footer = $('<td colspan="3"><a href="">' +
+                footer = $('<td colspan="3"><a href="' + script_root +
+                        '/audit/view/tower/' + tower_id + '">' +
                     '<i class="icon-search"></i> View all comments</a>' +
                 '</td>');
                 break;
@@ -283,7 +289,7 @@
         });
     }
 
-    function populateDataTable(table_id, titles, values) {
+    function populateDataTable(table_id, titles, values, footer) {
         $(table_id).TidyTable({
             enableCheckbox : false,
             enableMenu     : false,
@@ -294,6 +300,7 @@
         {
             columnTitles : titles,
             columnValues : values,
+            tableFoot : footer
         });
     }
 
