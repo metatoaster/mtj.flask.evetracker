@@ -141,13 +141,16 @@
 					col_value = raw_value;
 					title_value = raw_value;
 
+				var col = $('<td></td>');
+
 				if (typeof raw_value === "object") {
 					col_value = raw_value.col_value;
 					title_value = raw_value.title_value;
+					col.append(col_value);
 				}
-
-				var col = $('<td></td>')
-					.append(col_value)
+				else {
+					col.text(col_value);
+				}
 					
 				if (title_value) {
 					col.attr('title', title_value);
