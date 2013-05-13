@@ -1,7 +1,7 @@
 import zope.component
 
 from flask import Blueprint, Flask, request, g, make_response, render_template
-from flask import flash, url_for, current_app, session, redirect
+from flask import flash, url_for, current_app, session, redirect, abort
 
 from mtj.eve.tracker.interfaces import ITrackerBackend
 
@@ -38,6 +38,8 @@ def add_audit_form_table_rowid(table, rowid):
 
     backend = zope.component.getUtility(ITrackerBackend)
     categories = backend.getAuditCategories(table)
+    if not backend.getAuditable(table, rowid):
+        abort(404);
 
     if request.method == 'GET':
         result = render_template('audit_table_id.jinja', categories=categories)
@@ -49,6 +51,9 @@ def add_audit_form_table_rowid(table, rowid):
     user = current_app.config['MTJ_CURRENT_USER']()
     backend.addAudit((table, rowid), reason, user, category_name)
     # TODO redirect back to the actual entry.
+    # XXX hardcoding redirect response here to tower only
+    if table == 'tower':
+        return redirect('%s/tower/%d' % (request.script_root, rowid))
     result = render_template('audit_table_id.jinja', categories=categories)
     response = make_response(result)
     return response
