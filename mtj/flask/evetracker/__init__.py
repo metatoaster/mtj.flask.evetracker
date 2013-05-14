@@ -23,21 +23,23 @@ public_blueprints = {
 
 @app.before_request
 def before_request():
-    if not session.get('logged_in'):
-        # set the nav elements first.
-        g.navbar = []
-        g.aclbar = [('log in', '/acl/login')]
-
-        if request.blueprint in public_blueprints:
-            paths = public_blueprints[request.blueprint]
-            if paths is None or request.url_rule.endpoint in paths:
-                # Unspecified paths are all whitelists, or it's validated
-                # against the list of permissible endpoints.
-                return
-
-        abort(401)
-    else:
+    if session.get('logged_in') == current_app.config.get(
+            'MTJ_LOGGED_IN', 'logged_in'):
         set_logged_in_g()
+        return
+
+    # set the nav elements first.
+    g.navbar = []
+    g.aclbar = [('log in', '/acl/login')]
+
+    if request.blueprint in public_blueprints:
+        paths = public_blueprints[request.blueprint]
+        if paths is None or request.url_rule.endpoint in paths:
+            # Unspecified paths are all whitelists, or it's validated
+            # against the list of permissible endpoints.
+            return
+
+    abort(401)
 
 @app.before_request
 def csrf_protect():

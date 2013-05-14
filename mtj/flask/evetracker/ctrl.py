@@ -14,23 +14,33 @@ class EveTrackerOptions(Options):
     # Doing it the long way to not pollute the parent class.
     default_config = {}
     default_config.update(Options.default_config)
-    default_config.update({'users': {
-        'mode': 'default',
-        'setup_login': 'admin',
-        'setup_password': 'password',
-        'class': None,
-        'kwargs': None,
-    }})
+    default_config.update({
+        'users': {
+            'mode': 'default',
+            'setup_login': 'admin',
+            'setup_password': 'password',
+            'class': None,
+            'kwargs': None,
+        },
+        'acl': {
+            'logged_in': 'logged_in',
+        },
+    })
 
     _schema = {}
     _schema.update(Options._schema)
-    _schema.update({'users': {
-        'mode': ('default', 'setup', 'class_path',),
-        'setup_login': basestring,
-        'setup_password': basestring,
-        'class_path': basestring,
-        'kwargs': dict,
-    }})
+    _schema.update({
+        'users': {
+            'mode': ('default', 'setup', 'class_path',),
+            'setup_login': basestring,
+            'setup_password': basestring,
+            'class_path': basestring,
+            'kwargs': dict,
+        },
+        'acl': {
+            'logged_in': basestring,
+        },
+    })
 
 
 class EveTrackerRunner(FlaskRunner):
@@ -61,6 +71,7 @@ class EveTrackerRunner(FlaskRunner):
         app.config['MTJ_CSRF'] = csrf.Authenticator()
         # allow overriding and not depending on import user
         app.config['MTJ_CURRENT_USER'] = user.getCurrentUser
+        app.config['MTJ_LOGGED_IN'] = self.config.get('acl').get('logged_in')
 
 
 if __name__ == "__main__":

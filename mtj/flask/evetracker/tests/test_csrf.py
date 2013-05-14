@@ -32,6 +32,7 @@ class CsrfFlaskTestCase(TestCase):
     def setUp(self):
         self.app = Flask('mtj.flask.evetracker')
         self.app.config['SECRET_KEY'] = 'test_secret_key'
+        self.app.config['MTJ_LOGGED_IN'] = 'logged_in'
         self.app.config['MTJ_CSRF'] = csrf.Authenticator(
             secret='foobartestsecret')
 
@@ -47,6 +48,7 @@ class CsrfFlaskTestCase(TestCase):
         # intercepted, logged in.
         with self.app.test_request_context('/', method='POST'):
             session['mtj.user'] = {'user': 'username'}
+            session['logged_in'] = self.app.config['MTJ_LOGGED_IN']
             self.assertRaises(Forbidden, csrf_protect)
 
     def test_csrf_protect_user_with_token(self):
@@ -55,6 +57,7 @@ class CsrfFlaskTestCase(TestCase):
                 data={'_authenticator':
                     '857c28b1c5f87bfe312fc7df185a782a6bb46cad'}):
             session['mtj.user'] = {'user': 'username'}
+            session['logged_in'] = self.app.config['MTJ_LOGGED_IN']
             # could use a better way to test this.
             # a before_request method cannot return a value as it will
             # interfere with the wsgi stack.
