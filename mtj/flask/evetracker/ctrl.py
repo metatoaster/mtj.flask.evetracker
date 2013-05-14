@@ -23,6 +23,7 @@ class EveTrackerOptions(Options):
             'kwargs': None,
         },
         'acl': {
+            'backdoor': None,
             'logged_in': 'logged_in',
         },
     })
@@ -38,6 +39,7 @@ class EveTrackerOptions(Options):
             'kwargs': dict,
         },
         'acl': {
+            'backdoor': basestring,
             'logged_in': basestring,
         },
     })
@@ -72,6 +74,8 @@ class EveTrackerRunner(FlaskRunner):
         # allow overriding and not depending on import user
         app.config['MTJ_CURRENT_USER'] = user.getCurrentUser
         app.config['MTJ_LOGGED_IN'] = self.config.get('acl').get('logged_in')
+        if self.config.get('acl').get('backdoor'):
+            app.config['MTJ_BACKDOOR'] = self.config.get('acl').get('backdoor')
 
 
 if __name__ == "__main__":

@@ -21,6 +21,23 @@ public_blueprints = {
     'json_frontend': ['json_frontend.reload_db'],
 }
 
+backdoored_blueprints = {
+    'json_frontend': ['json_frontend.overview'],
+}
+
+def check_backdoor():
+    if current_app.config.get('MTJ_BACKDOOR'):
+        try:
+            m, auth = request.headers.get('Authorization', '').split(' ', 1)
+        except ValueError:
+            m, auth = '', ''
+
+        paths = backdoored_blueprints.get(request.blueprint, None)
+        return (m.lower() == 'backdoor' and 
+                auth == current_app.config.get('MTJ_BACKDOOR') and
+                (paths is None or request.url_rule.endpoint in paths))
+    return False
+
 @app.before_request
 def before_request():
     if session.get('logged_in') == current_app.config.get(
@@ -38,6 +55,9 @@ def before_request():
             # Unspecified paths are all whitelists, or it's validated
             # against the list of permissible endpoints.
             return
+
+    if check_backdoor():
+        return
 
     abort(401)
 
