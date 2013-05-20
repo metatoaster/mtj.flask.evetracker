@@ -129,7 +129,11 @@
             var tower = data.tower;
 
             var label = $('<div id="tower_label"></div>');
-            label.text(tower.audits.label[0].reason);
+            var reason;
+            if (tower.audits.label) {
+                reason = tower.audits.label[0].reason;
+                label.text(reason);
+            }
             label.append('<a href="' + script_root + '/audit/add/tower/' +
                         tower.id + '?category_name=label" ' +
                     'class="pull-right">' +
@@ -140,7 +144,7 @@
                 ['Label',
                     {
                         'col_value': label,
-                        'value': tower.audits.label[0].reason
+                        'value': reason
                     },
                 ],
                 ['Celestial', tower.celestialName],
