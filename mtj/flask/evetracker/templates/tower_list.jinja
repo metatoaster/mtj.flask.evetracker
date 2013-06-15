@@ -6,6 +6,7 @@
         <form class="form-inline form-tower-filter">
           <strong>Filters</strong>
           <span class="offset1">
+            <input id="label" type="text" placeholder="Label" />
             <input id="region" type="text" placeholder="Region" />
             <input id="celestial" type="text" placeholder="Moon" />
           </span>
@@ -41,12 +42,18 @@
 {% block script %}
 
     var towers = [];
+
     var regions = [];
+    var celestials = [];
+    var labels = [];
+
     var filterRegion = null;
     var filterCelestial = null;
-    var celestials = [];
-    var lastRegion = null
-    var lastCelestial = null
+    var filterLabel = null;
+
+    var lastRegion = null;
+    var lastCelestial = null;
+    var lastLabel = null;
 
     var script_root = '{{ request.script_root }}';
 
@@ -89,8 +96,20 @@
                 }
             });
 
+            $('#label').typeahead({
+                source: labels,
+                updater: function(item) {
+                    filterLabel = item;
+                    setTimeout(function() {
+                        populateTowers();
+                    }, 10);
+                    return item;
+                }
+            });
+
             hookPopulateTowers('#region', 250);
             hookPopulateTowers('#celestial', 250);
+            hookPopulateTowers('#label', 250);
 
         });
     });
@@ -98,10 +117,13 @@
     function populateTowers() {
         var showAll = ($('#showAll').hasClass('active'));
         if ((lastRegion != $('#region').val().toLowerCase()) ||
-                (lastCelestial != $('#celestial').val().toLowerCase())) {
+                (lastCelestial != $('#celestial').val().toLowerCase()) ||
+                (lastLabel != $('#label').val().toLowerCase())
+            ) {
             _populateTowers(showAll);
             lastRegion = $('#region').val().toLowerCase();
             lastCelestial = $('#celestial').val().toLowerCase();
+            lastLabel = $('#label').val().toLowerCase();
         }
     }
 
@@ -121,10 +143,16 @@
                 if (celestials.indexOf(item.celestialName) < 0) {
                     celestials.push(item.celestialName);
                 }
+                if (labels.indexOf(item.auditLabel) < 0) {
+                    labels.push(item.auditLabel);
+                }
                 if ((item.regionName.toLowerCase().indexOf(
                             $('#region').val().toLowerCase()) > -1) &&
                         (item.celestialName.toLowerCase().indexOf(
-                            $('#celestial').val().toLowerCase()) > -1)) {
+                            $('#celestial').val().toLowerCase()) > -1) &&
+                        (item.auditLabel.toLowerCase().indexOf(
+                            $('#label').val().toLowerCase()) > -1)
+                    ) {
                     values.push(value);
                 }
             }
@@ -132,6 +160,7 @@
 
         regions.sort();
         celestials.sort();
+        labels.sort();
 
         $('#pos_overview').TidyTable({
             enableCheckbox : false,
