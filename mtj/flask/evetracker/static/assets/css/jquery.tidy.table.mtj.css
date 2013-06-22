@@ -16,7 +16,7 @@ table.tidy_table.sortable th {
 }
 
 table.tidy_table.sortable th:before {
-	content: "\02B0D";
+	content: "\021F3";
         color: #ccc;
         float: right;
 }
@@ -34,7 +34,7 @@ table.tidy_table th.sort_asc {
 }
 
 table.tidy_table th.sort_asc:before {
-	content: "\02B07";
+	content: "\021E9";
         color: #888;
         float: right;
 }
@@ -45,7 +45,7 @@ table.tidy_table th.sort_desc {
 
 
 table.tidy_table th.sort_desc:before {
-	content: "\02B06";
+	content: "\021E7";
         color: #888;
         float: right;
 }
