@@ -15,7 +15,7 @@ table.tidy_table.sortable th {
         white-space: nowrap;
 }
 
-table.tidy_table.sortable th:after {
+table.tidy_table.sortable th:before {
 	content: "\02B0D";
         color: #ccc;
         float: right;
@@ -25,15 +25,15 @@ table.tidy_table.sortable th:hover {
 	background: #f7f7f7 no-repeat right center;
 }
 
-table.tidy_table.sortable th:hover:after {
-	color: #bbb;
+table.tidy_table.sortable th:hover:before {
+	color: #888;
 }
 
 table.tidy_table th.sort_asc {
 	background: #EEEEEE no-repeat right center;
 }
 
-table.tidy_table th.sort_asc:after {
+table.tidy_table th.sort_asc:before {
 	content: "\02B07";
         color: #888;
         float: right;
@@ -44,7 +44,7 @@ table.tidy_table th.sort_desc {
 }
 
 
-table.tidy_table th.sort_desc:after {
+table.tidy_table th.sort_desc:before {
 	content: "\02B06";
         color: #888;
         float: right;
