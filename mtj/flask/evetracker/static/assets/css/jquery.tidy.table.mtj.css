@@ -16,7 +16,7 @@ table.tidy_table.sortable th {
 }
 
 table.tidy_table.sortable th:before {
-	content: "\021F3";
+	content: "\021D5";
         color: #ccc;
         float: right;
 }
