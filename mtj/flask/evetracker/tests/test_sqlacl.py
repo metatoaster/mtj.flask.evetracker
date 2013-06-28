@@ -1,11 +1,11 @@
 from unittest import TestCase, TestSuite, makeSuite
-from mtj.flask.evetracker import sqlacl
+from mtj.flask.evetracker.acl import sql
 
 
 class AclTestCase(TestCase):
 
     def setUp(self):
-        self.auth = sqlacl.SqlAcl()
+        self.auth = sql.SqlAcl()
 
     def tearDown(self):
         pass
