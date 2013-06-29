@@ -79,9 +79,7 @@ class SqlAcl(BaseAcl):
         return self._sessions()
 
     def validate(self, login, password):
-        session = self.session()
-        q = session.query(User).filter(User.login == login)
-        user = q.first()
+        user = self.getUser(login)
         if user is None:
             # Data leakage potential via timing attack.  Mitigation: 
             # generate a new crypt to emuluate the time spent on
@@ -92,18 +90,14 @@ class SqlAcl(BaseAcl):
             return False
 
         result = sha256_crypt.verify(password, user.password)
-        session.close()
         return result
 
     def register(self, *a, **kw):
         u = User(*a, **kw)
+        if self.getUser(u.login):
+            return False
 
         session = self.session()
-        q = session.query(User).filter(User.login == u.login)
-        user = q.first()
-        if user:
-            session.rollback()
-            return False
         session.add(u)
         session.commit()
         return True
@@ -112,6 +106,12 @@ class SqlAcl(BaseAcl):
         session = self.session()
         q = session.query(User)
         return q.all()
+
+    def getUser(self, login):
+        session = self.session()
+        q = session.query(User).filter(User.login == login)
+        session.close()
+        return q.first()
 
     def addGroup(self, name, description=None):
         g = Group(name, description)

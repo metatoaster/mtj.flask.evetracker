@@ -20,6 +20,9 @@ class BaseAcl(object):
     def getUserGroups(self, user):
         return []
 
+    def listUsers(self):
+        return []
+
 
 class SetupAcl(BaseAcl):
     def __init__(self, login, password):
@@ -29,5 +32,11 @@ class SetupAcl(BaseAcl):
     def validate(self, login, password):
         return self.login == login and self.password == password
 
+    def getUser(self, user):
+        return user == 'admin' and 'admin' or None
+
     def getUserGroups(self, user):
+        return ['admin']
+
+    def listUsers(self):
         return ['admin']

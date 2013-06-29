@@ -20,6 +20,19 @@ class AclTestCase(TestCase):
         self.assertFalse(auth.authenticate('admin', 'nope'))
         self.assertTrue(auth.authenticate('admin', 'password'))
 
+    def test_list_users(self):
+        auth = self.auth
+        auth.register('admin', 'password')
+        auth.register('user', 'secret')
+        users = auth.listUsers()
+        self.assertEqual(users[0].login, 'admin')
+        self.assertNotEqual(users[0].password, 'password')
+        self.assertEqual(users[1].login, 'user')
+        self.assertNotEqual(users[1].password, 'secret')
+
+        self.assertEqual(auth.getUser('admin').login, 'admin')
+        self.assertEqual(auth.getUser('user').login, 'user')
+
     def test_dupe_register(self):
         auth = self.auth
         self.assertTrue(auth.register('admin', 'password'))
