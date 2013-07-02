@@ -14,7 +14,7 @@ class UserTestCase(unittest.TestCase):
 
     def setUp(self):
         app = Flask('mtj.flask.evetracker')
-        app.config['MTJ_ACL'] = acl.SetupAcl('admin', 'password')
+        app.config['MTJ_ACL'] = self.auth = acl.SetupAcl('admin', 'password')
         app.config['SECRET_KEY'] = 'test_secret_key'
         app.config['MTJ_LOGGED_IN'] = 'test_logged_in_token'
         app.register_blueprint(user.acl_front, url_prefix='/acl')
@@ -40,18 +40,13 @@ class UserTestCase(unittest.TestCase):
 
     def test_user(self):
         with self.app.test_request_context('/'):
-            self.assertEqual(user.getCurrentUser(), user.anonymous)
+            self.assertEqual(user.getCurrentUser(), acl.anonymous)
 
-            # if session user is set.
-            session['mtj.user'] = {'user': 'admin'}
-            self.assertEqual(user.getCurrentUser(), user.anonymous)
+            # if access token is correctly set.
+            session['mtj.user'] = self.auth.generateAccessToken(
+                'admin')
+            self.assertEqual(user.getCurrentUser().login, 'admin')
 
-            # we need the logged_in token set correctly too
-            session['logged_in'] = 'test_logged_in_token'
-            self.assertEqual(user.getCurrentUser(), 'admin')
-
-            session['logged_in'] = True
-            self.assertEqual(user.getCurrentUser(), user.anonymous)
 
 if __name__ == '__main__':
     unittest.main()

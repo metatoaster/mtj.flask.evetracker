@@ -61,7 +61,10 @@ class SqlAcl(BaseAcl):
     Low level SQLAlchemy basd ACL backend.
     """
 
-    def __init__(self, src=None):
+    def __init__(self, src=None, *a, **kw):
+        # XXX for the session/access token table.
+        super(SqlAcl, self).__init__(*a, **kw)
+
         if not src:
             src = 'sqlite://'
 

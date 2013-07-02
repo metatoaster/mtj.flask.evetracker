@@ -1,23 +1,11 @@
 from flask import Blueprint, Flask, request, g, make_response, render_template
-from flask import flash, url_for, current_app, session, redirect
+from flask import abort, flash, url_for, current_app, session, redirect
 
 # TODO we should move this whole thing into a separate module.
 from mtj.flask.evetracker import acl
+anonymous = acl.anonymous
 
 acl_front = Blueprint('acl_front', 'mtj.flask.evetracker.user.acl')
-
-
-class AnonymousUser(object):
-
-    def __str__(self):
-        return 'Anonymous'
-
-    def __repr__(self):
-        return '<Anonymous>'
-
-anonymous = AnonymousUser()
-
-# Should probably define some encapsulation for users.
 
 
 @acl_front.route('/login', methods=['GET', 'POST'])
@@ -45,7 +33,7 @@ def login():
         session['logged_in'] = current_app.config.get(
             'MTJ_LOGGED_IN', 'logged_in')
         session['mtj.user'] = user
-        flash('Welcome %s' % user['user'])
+        flash('Welcome %s' % user['login'])
         return redirect(request.script_root)
     else:
         error = 'Invalid credentials'
@@ -54,7 +42,7 @@ def login():
     response = make_response(result)
     return response
 
-@acl_front.route('/logout')
+@acl_front.route('/logout', methods=['GET', 'POST'])
 def logout():
     if session.get('logged_in'):
         session.pop('logged_in', None)
@@ -72,16 +60,27 @@ def current():
     response = make_response(result)
     return response
 
+@acl_front.route('/list')
+def list():
+    verifyUserGroup('admin')
+    acl_back = current_app.config.get('MTJ_ACL')
+    users = acl_back.listUsers()
+    result = render_template('user_list.jinja', users=users)
+    response = make_response(result)
+    return response
+
 
 # helpers:
 
 def getCurrentUser():
-    if not session.get('logged_in') == current_app.config.get(
-            'MTJ_LOGGED_IN', 'logged_in'):
-        return anonymous
+    access_token = session.get('mtj.user', {})
+    acl_back = current_app.config.get('MTJ_ACL', None)
+    if acl_back is None:
+        return acl.anonymous
+    return acl_back.getUserFromAccessToken(access_token)
 
-    user = session.get('mtj.user')
-    if isinstance(user, dict):
-        return user.get('user', 'Anonymous')
-    else:
-        return anonymous
+def verifyUserGroup(group):
+    user = getCurrentUser()
+    acl_back = current_app.config.get('MTJ_ACL')
+    if not group in acl_back.getUserGroups(user):
+        abort(403)

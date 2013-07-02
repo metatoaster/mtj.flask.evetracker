@@ -7,6 +7,12 @@ from mtj.flask.evetracker import csrf
 from mtj.flask.evetracker import csrf_protect
 
 
+class DummyACL(object):
+    def getUserFromAccessToken(self, access_token):
+        from mtj.flask.evetracker.acl import anonymous
+        return session.get('dummy_user', anonymous)
+
+
 class CsrfTestCase(TestCase):
 
     def setUp(self):
@@ -31,10 +37,11 @@ class CsrfFlaskTestCase(TestCase):
 
     def setUp(self):
         self.app = Flask('mtj.flask.evetracker')
+
         self.app.config['SECRET_KEY'] = 'test_secret_key'
-        self.app.config['MTJ_LOGGED_IN'] = 'logged_in'
         self.app.config['MTJ_CSRF'] = csrf.Authenticator(
             secret='foobartestsecret')
+        self.app.config['MTJ_ACL'] = DummyACL()
 
     def tearDown(self):
         pass
@@ -47,8 +54,7 @@ class CsrfFlaskTestCase(TestCase):
     def test_csrf_protect_user_no_token(self):
         # intercepted, logged in.
         with self.app.test_request_context('/', method='POST'):
-            session['mtj.user'] = {'user': 'username'}
-            session['logged_in'] = self.app.config['MTJ_LOGGED_IN']
+            session['dummy_user'] = 'username'
             self.assertRaises(Forbidden, csrf_protect)
 
     def test_csrf_protect_user_with_token(self):
@@ -56,8 +62,7 @@ class CsrfFlaskTestCase(TestCase):
         with self.app.test_request_context('/', method='POST',
                 data={'_authenticator':
                     '857c28b1c5f87bfe312fc7df185a782a6bb46cad'}):
-            session['mtj.user'] = {'user': 'username'}
-            session['logged_in'] = self.app.config['MTJ_LOGGED_IN']
+            session['dummy_user'] = 'username'
             # could use a better way to test this.
             # a before_request method cannot return a value as it will
             # interfere with the wsgi stack.

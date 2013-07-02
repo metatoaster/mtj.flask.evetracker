@@ -59,6 +59,7 @@ class AclTestCase(TestCase):
         auth.addGroup('admin')
         auth.addGroup('user')
 
+        self.assertEqual(auth.getUserGroups('admin'), ())
         auth.setUserGroups('admin', ('admin',))
         self.assertEqual(auth.getUserGroups('admin'), ('admin',))
         auth.setUserGroups('admin', ('user',))
