@@ -7,6 +7,8 @@ from werkzeug.exceptions import HTTPException
 
 from mtj.eve.tracker.frontend.flask import json_frontend
 
+from mtj.flask.evetracker.acl.flask import *
+
 from mtj.flask.evetracker import csrf
 from mtj.flask.evetracker import util
 from mtj.flask.evetracker import pos
@@ -40,8 +42,8 @@ def check_backdoor():
 
 @app.before_request
 def before_request():
-    if session.get('logged_in') == current_app.config.get(
-            'MTJ_LOGGED_IN', 'logged_in'):
+    current_user = getCurrentUser()
+    if not current_user == user.anonymous:
         set_logged_in_g()
         return
 
@@ -72,7 +74,8 @@ def csrf_protect():
 
     if request.method == 'POST':
         token = request.form.get(csrf.csrf_key)
-        if token != current_app.config['MTJ_CSRF'].getSecretFor(current_user):
+        if token != current_app.config['MTJ_CSRF'].getSecretFor(
+                current_user.login):
             # TODO make this 403 specific to token failure (tell user
             # to reload the form in case of changes in hash.
             abort(403)
@@ -80,7 +83,7 @@ def csrf_protect():
 def set_logged_in_g():
     g.navbar = app.config['MTJ_FLASK_NAV']
     g.aclbar = [
-        (user.getCurrentUser(), '/acl/current'),
+        (user.getCurrentUser().login, '/acl/current'),
         ('logout', '/acl/logout'),
     ]
 

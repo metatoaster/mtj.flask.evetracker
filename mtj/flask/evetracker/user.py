@@ -3,6 +3,8 @@ from flask import abort, flash, url_for, current_app, session, redirect
 
 # TODO we should move this whole thing into a separate module.
 from mtj.flask.evetracker import acl
+from mtj.flask.evetracker.acl.flask import *
+
 anonymous = acl.anonymous
 
 acl_front = Blueprint('acl_front', 'mtj.flask.evetracker.user.acl')
@@ -61,26 +63,11 @@ def current():
     return response
 
 @acl_front.route('/list')
+@require_group('admin')
 def list():
-    verifyUserGroup('admin')
     acl_back = current_app.config.get('MTJ_ACL')
     users = acl_back.listUsers()
     result = render_template('user_list.jinja', users=users)
     response = make_response(result)
     return response
 
-
-# helpers:
-
-def getCurrentUser():
-    access_token = session.get('mtj.user', {})
-    acl_back = current_app.config.get('MTJ_ACL', None)
-    if acl_back is None:
-        return acl.anonymous
-    return acl_back.getUserFromAccessToken(access_token)
-
-def verifyUserGroup(group):
-    user = getCurrentUser()
-    acl_back = current_app.config.get('MTJ_ACL')
-    if not group in acl_back.getUserGroups(user):
-        abort(403)

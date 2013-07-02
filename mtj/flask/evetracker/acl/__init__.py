@@ -80,7 +80,7 @@ class BaseAcl(object):
 
         return self.getUser(access_token['login'])
 
-    def getUserGroups(self, user):
+    def getUserGroups(self, login):
         return []
 
     def listUsers(self):
@@ -98,16 +98,21 @@ class SetupAcl(BaseAcl):
         self.password = password
 
     def validate(self, login, password):
-        return self.login == login and self.password == password
+        return login in (self.login, 'admin') and self.password == password
 
     def getUser(self, user):
-        if not user == 'admin':
-            return anonymous
+        if user == self.admin_user.login:
+            return self.admin_user
 
-        return self.admin_user
+        if user == self.login:
+            return BaseUser(self.login)
+
+        return anonymous
 
     def getUserGroups(self, user):
-        return [self.admin_group]
+        if user == self.admin_user:
+            return [self.admin_group]
+        return []
 
     def listUsers(self):
-        return [self.admin_user]
+        return [self.admin_user, BaseUser(self.login)]

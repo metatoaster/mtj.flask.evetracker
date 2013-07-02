@@ -130,16 +130,16 @@ class SqlAcl(BaseAcl):
     def setUserGroups(self, user, groups):
         all_groups = {g.name for g in self.listGroups()}
         session = self.session()
-        session.query(UserGroup).filter(UserGroup.user == user).delete()
+        session.query(UserGroup).filter(UserGroup.user == user.login).delete()
         for group in groups:
             if group not in all_groups:
                 continue
-            session.add(UserGroup(user, group))
+            session.add(UserGroup(user.login, group))
         session.commit()
 
     def getUserGroups(self, user):
         session = self.session()
-        q = session.query(UserGroup).filter(UserGroup.user == user)
+        q = session.query(UserGroup).filter(UserGroup.user == user.login)
         results = []
         for ug in q.all():
             results.append(ug.group)

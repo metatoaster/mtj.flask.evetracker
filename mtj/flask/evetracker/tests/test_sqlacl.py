@@ -59,17 +59,19 @@ class AclTestCase(TestCase):
         auth.addGroup('admin')
         auth.addGroup('user')
 
-        self.assertEqual(auth.getUserGroups('admin'), ())
-        auth.setUserGroups('admin', ('admin',))
-        self.assertEqual(auth.getUserGroups('admin'), ('admin',))
-        auth.setUserGroups('admin', ('user',))
-        self.assertEqual(auth.getUserGroups('admin'), ('user',))
-        auth.setUserGroups('admin', ('user', 'admin'))
-        self.assertEqual(auth.getUserGroups('admin'), ('admin', 'user',))
+        admin_user = auth.getUser('admin')
+
+        self.assertEqual(auth.getUserGroups(admin_user), ())
+        auth.setUserGroups(admin_user, ('admin',))
+        self.assertEqual(auth.getUserGroups(admin_user), ('admin',))
+        auth.setUserGroups(admin_user, ('user',))
+        self.assertEqual(auth.getUserGroups(admin_user), ('user',))
+        auth.setUserGroups(admin_user, ('user', 'admin'))
+        self.assertEqual(auth.getUserGroups(admin_user), ('admin', 'user',))
 
         # Addition of non-existent groups fail silently.
-        auth.setUserGroups('admin', ('user', 'nimda'))
-        self.assertEqual(auth.getUserGroups('admin'), ('user',))
+        auth.setUserGroups(admin_user, ('user', 'nimda'))
+        self.assertEqual(auth.getUserGroups(admin_user), ('user',))
 
 
 def test_suite():

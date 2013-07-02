@@ -33,7 +33,7 @@ class Authenticator(object):
         """
 
         if username is None:
-            username = user.getCurrentUser()
+            username = user.getCurrentUser().login
 
         return hmac.new(self.secret, username, sha).hexdigest()
 
