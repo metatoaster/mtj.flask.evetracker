@@ -54,6 +54,10 @@ class AclTestCase(TestCase):
         self.assertEqual(groups[1].description, 'Normal users')
 
     def test_user_group(self):
+        def filter_gn(groups):
+            results = [ug.name for ug in groups]
+            return tuple(sorted(results))
+
         auth = self.auth
         auth.register('admin', 'password')
         auth.addGroup('admin')
@@ -61,17 +65,18 @@ class AclTestCase(TestCase):
 
         admin_user = auth.getUser('admin')
 
-        self.assertEqual(auth.getUserGroups(admin_user), ())
+        self.assertEqual(filter_gn(auth.getUserGroups(admin_user)), ())
         auth.setUserGroups(admin_user, ('admin',))
-        self.assertEqual(auth.getUserGroups(admin_user), ('admin',))
+        self.assertEqual(filter_gn(auth.getUserGroups(admin_user)), ('admin',))
         auth.setUserGroups(admin_user, ('user',))
-        self.assertEqual(auth.getUserGroups(admin_user), ('user',))
+        self.assertEqual(filter_gn(auth.getUserGroups(admin_user)), ('user',))
         auth.setUserGroups(admin_user, ('user', 'admin'))
-        self.assertEqual(auth.getUserGroups(admin_user), ('admin', 'user',))
+        self.assertEqual(filter_gn(auth.getUserGroups(admin_user)),
+            ('admin', 'user',))
 
         # Addition of non-existent groups fail silently.
         auth.setUserGroups(admin_user, ('user', 'nimda'))
-        self.assertEqual(auth.getUserGroups(admin_user), ('user',))
+        self.assertEqual(filter_gn(auth.getUserGroups(admin_user)), ('user',))
 
 
 def test_suite():

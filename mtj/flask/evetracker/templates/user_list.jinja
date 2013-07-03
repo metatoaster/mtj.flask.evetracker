@@ -58,7 +58,7 @@
         var m = tbl.find('tbody tr')
         m.each(function(i) {
             var row = [];
-            var n = m.find('td');
+            var n = $(m[i]).find('td');
             n.each(function(j) {
                 row.push($(n[j]).html());
             });

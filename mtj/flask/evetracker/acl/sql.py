@@ -139,10 +139,9 @@ class SqlAcl(BaseAcl):
 
     def getUserGroups(self, user):
         session = self.session()
-        q = session.query(UserGroup).filter(UserGroup.user == user.login)
-        results = []
-        for ug in q.all():
-            results.append(ug.group)
-        results = tuple(sorted(results))
+        q = session.query(Group).filter(Group.name.in_(
+            session.query(UserGroup.group).filter(UserGroup.user == user.login)
+        ))
+        results = q.all()
         session.close()
         return results

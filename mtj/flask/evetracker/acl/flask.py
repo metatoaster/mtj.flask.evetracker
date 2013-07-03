@@ -15,10 +15,13 @@ def getCurrentUser():
         return anonymous
     return acl_back.getUserFromAccessToken(access_token)
 
-def verifyUserGroupByName(group):
+def getCurrentUserGroupNames():
     user = getCurrentUser()
     acl_back = current_app.config.get('MTJ_ACL')
-    if not group in [gp.name for gp in acl_back.getUserGroups(user)]:
+    return [gp.name for gp in acl_back.getUserGroups(user)]
+
+def verifyUserGroupByName(group):
+    if not group in getCurrentUserGroupNames():
         abort(403)
     return True
 
