@@ -12,6 +12,7 @@
               <th>Login</th>
               <th>Name</th>
               <th>Email</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -21,6 +22,7 @@
               <td>{{ user.login }}</td>
               <td>{{ user.name }}</td>
               <td>{{ user.email }}</td>
+              <td><a href="edit/{{ user.login }}">Edit</a></td>
             </tr>
           {% endfor %}
 
@@ -60,7 +62,10 @@
             var row = [];
             var n = $(m[i]).find('td');
             n.each(function(j) {
-                row.push($(n[j]).html());
+                row.push({
+                    'col_value': $(n[j]).html(),
+                    'value': $(n[j]).text()
+                });
             });
             tbody.push(row);
         })
