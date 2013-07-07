@@ -1,5 +1,12 @@
 from unittest import TestCase, TestSuite, makeSuite
+
+from flask import Flask, session
+from werkzeug.exceptions import Forbidden
+
+import mtj.flask.evetracker
+
 from mtj.flask.evetracker.acl import sql
+from mtj.flask.evetracker import user
 
 
 class AclTestCase(TestCase):
@@ -109,8 +116,75 @@ class AclTestCase(TestCase):
         self.assertEqual(len(auth.getUserGroups(auth.getUser('admin'))), 0)
 
 
+class UserSqlAclIntegrationTestCase(TestCase):
+
+    def setUp(self):
+        app = Flask('mtj.flask.evetracker')
+        app.config['MTJ_ACL'] = self.auth = sql.SqlAcl(
+            setup_login='admin', setup_password='password')
+        app.config['SECRET_KEY'] = 'test_secret_key'
+        app.config['MTJ_LOGGED_IN'] = 'test_logged_in_token'
+        app.register_blueprint(user.acl_front, url_prefix='/acl')
+
+        app.config['TESTING'] = True
+        self.app = app
+        self.client = self.app.test_client()
+
+        with self.client as c:
+            rv = c.post('/acl/login',
+                data={'login': 'admin', 'password': 'password'})
+
+    def test_list_user(self):
+        with self.client as c:
+            rv = c.get('/acl/list')
+            self.assertTrue('<td>admin</td>' in rv.data)
+
+    def test_add_user(self):
+        with self.client as c:
+            rv = c.get('/acl/add')
+            self.assertTrue('name="name" value=""' in rv.data)
+            self.assertTrue('name="email" value=""' in rv.data)
+
+            rv = c.post('/acl/add', data={
+                'login': 'user',
+                'password': 'userpassword',
+                'name': 'User Name',
+                'email': 'user@example.com',
+            })
+            self.assertEqual(rv.headers['location'],
+                'http://localhost/acl/edit/user')
+
+            r2 = c.get('/acl/edit/user')
+
+            self.assertTrue('name="login" value="user"' in r2.data)
+            self.assertTrue('name="name" value="User Name"' in r2.data)
+            self.assertTrue('name="email" value="user@example.com"' in r2.data)
+
+        with self.app.test_client() as c:
+            # Now try logging in using the newly added user.
+            rv = c.post('/acl/login',
+                data={'login': 'user', 'password': 'userpassword'})
+            self.assertEqual(rv.headers['location'],
+                'http://localhost/')
+
+            rv = c.get('/acl/current')
+            self.assertTrue('Welcome user' in rv.data)
+
+    def test_edit_user(self):
+        with self.client as c:
+            rv = c.get('/acl/edit/admin')
+            self.assertTrue('name="name" value=""' in rv.data)
+            self.assertTrue('name="email" value=""' in rv.data)
+
+            rv = c.post('/acl/edit/admin',
+                data={'name': 'User Name', 'email': 'user@example.com'})
+            self.assertTrue('name="name" value="User Name"' in rv.data)
+            self.assertTrue('name="email" value="user@example.com"' in rv.data)
+
+
 def test_suite():
     suite = TestSuite()
     suite.addTest(makeSuite(AclTestCase))
+    suite.addTest(makeSuite(UserSqlAclIntegrationTestCase))
     return suite
 

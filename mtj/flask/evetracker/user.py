@@ -71,3 +71,39 @@ def list():
     response = make_response(result)
     return response
 
+@acl_front.route('/add', methods=['GET', 'POST'])
+@require_group('admin')
+def add():
+    acl_back = current_app.config.get('MTJ_ACL')
+
+    if request.method == 'POST':
+        login = request.form['login']
+        password = request.form['password']
+        name = request.form['name']
+        email = request.form['email']
+        result = acl_back.register(login, password, name, email)
+        if result:
+            flash('User created')
+            return redirect(url_for('acl_front.edit', user_login=login))
+        flash('Failed to create user %s as it already exists.' % login)
+
+    result = render_template('user_add.jinja')
+    response = make_response(result)
+    return response
+
+@acl_front.route('/edit/<user_login>', methods=['GET', 'POST'])
+@require_group('admin')
+def edit(user_login):
+    acl_back = current_app.config.get('MTJ_ACL')
+
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        acl_back.editUser(user_login, name, email)
+        flash('User updated')
+
+    user = acl_back.getUser(user_login)
+    result = render_template('user_edit.jinja', user=user)
+    response = make_response(result)
+    return response
+
