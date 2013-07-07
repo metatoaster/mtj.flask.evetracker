@@ -54,7 +54,7 @@
     <div id="content" class="container">
       <div class="row">
         {% for message in get_flashed_messages() %}
-          <div class="flash">{{ message }}</div>
+          <div class="flash text-info alert alert-info"><span class="label label-info">Info</span> {{ message }}</div>
         {% endfor %}
       </div>
 
