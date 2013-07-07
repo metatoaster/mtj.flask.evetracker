@@ -45,13 +45,15 @@ class AclTestCase(TestCase):
 
     def test_group_base(self):
         auth = self.auth
-        auth.addGroup('admin')
         auth.addGroup('user', 'Normal users')
 
         groups = auth.listGroups()
+        # builtin.
         self.assertEqual(groups[0].name, 'admin')
         self.assertEqual(groups[1].name, 'user')
         self.assertEqual(groups[1].description, 'Normal users')
+
+        self.assertEqual(auth.getGroup('user').description, 'Normal users')
 
     def test_user_group(self):
         def filter_gn(groups):
@@ -60,7 +62,6 @@ class AclTestCase(TestCase):
 
         auth = self.auth
         auth.register('admin', 'password')
-        auth.addGroup('admin')
         auth.addGroup('user')
 
         admin_user = auth.getUser('admin')
@@ -77,6 +78,24 @@ class AclTestCase(TestCase):
         # Addition of non-existent groups fail silently.
         auth.setUserGroups(admin_user, ('user', 'nimda'))
         self.assertEqual(filter_gn(auth.getUserGroups(admin_user)), ('user',))
+
+    def test_setup_login(self):
+        auth = sql.SqlAcl(setup_login='admin')
+        self.assertEqual(auth.getUser('admin'), None)
+        auth = sql.SqlAcl(setup_login='admin', setup_password='password')
+        self.assertEqual(auth.getUser('admin').login, 'admin')
+        self.assertTrue(auth.authenticate('admin', 'password'))
+
+        admin_grp = auth.getGroup('admin')
+        self.assertEqual(admin_grp.name,
+            auth.getUserGroups(auth.getUser('admin'))[0].name)
+
+        # revoke admin
+        auth.setUserGroups(auth.getUser('admin'), ())
+        auth._registerAdmin('admin', 'password')
+        # Should not have any groups as this login was previously
+        # registered.
+        self.assertEqual(len(auth.getUserGroups(auth.getUser('admin'))), 0)
 
 
 def test_suite():

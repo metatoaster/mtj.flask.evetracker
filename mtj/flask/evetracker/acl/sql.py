@@ -78,6 +78,22 @@ class SqlAcl(BaseAcl):
 
         self.src = src
 
+        admin_grp = Group('admin', 'Adminstrator group')
+        session = self.session()
+        session.merge(admin_grp)
+        session.commit()
+
+        setup_login = kw.pop('setup_login', None)
+        setup_password = kw.pop('setup_password', None)
+        if setup_login and setup_password:
+            self._registerAdmin(setup_login, setup_password)
+
+    def _registerAdmin(self, setup_login, setup_password):
+        result = self.register(login=setup_login, password=setup_password)
+        if result:
+            user = self.getUser(setup_login)
+            self.setUserGroups(user, ('admin',))
+
     def session(self):
         return self._sessions()
 
@@ -113,6 +129,12 @@ class SqlAcl(BaseAcl):
     def getUser(self, login):
         session = self.session()
         q = session.query(User).filter(User.login == login)
+        session.close()
+        return q.first()
+
+    def getGroup(self, group_name):
+        session = self.session()
+        q = session.query(Group).filter(Group.name == group_name)
         session.close()
         return q.first()
 
