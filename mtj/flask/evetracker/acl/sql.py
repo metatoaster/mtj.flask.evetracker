@@ -167,3 +167,16 @@ class SqlAcl(BaseAcl):
         results = q.all()
         session.close()
         return results
+
+    def editUser(self, login, name=None, email=None):
+        user = self.getUser(login)
+        if not user:
+            return False
+
+        user.name = name
+        user.email = email
+
+        session = self.session()
+        session.merge(user)
+        session.commit()
+        return True

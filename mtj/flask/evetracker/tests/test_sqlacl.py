@@ -33,6 +33,17 @@ class AclTestCase(TestCase):
         self.assertEqual(auth.getUser('admin').login, 'admin')
         self.assertEqual(auth.getUser('user').login, 'user')
 
+    def test_edit_user(self):
+        auth = self.auth
+        auth.register('user', 'password')
+        user = auth.getUser('user')
+        self.assertEqual(user.name, None)
+        self.assertEqual(user.email, None)
+        auth.editUser('user', 'User Name', 'user@example.com')
+        user = auth.getUser('user')
+        self.assertEqual(user.name, 'User Name')
+        self.assertEqual(user.email, 'user@example.com')
+
     def test_dupe_register(self):
         auth = self.auth
         self.assertTrue(auth.register('admin', 'password'))
