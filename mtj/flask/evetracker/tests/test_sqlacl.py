@@ -19,13 +19,18 @@ class AclTestCase(TestCase):
 
     def test_core_acl(self):
         auth = self.auth
-        auth.register('admin', 'password')
+        self.assertTrue(auth.register('admin', 'password'))
         users = auth.listUsers()
         self.assertEqual(users[0].login, 'admin')
         self.assertNotEqual(users[0].password, 'password')
 
         self.assertFalse(auth.authenticate('admin', 'nope'))
         self.assertTrue(auth.authenticate('admin', 'password'))
+
+    def test_too_short_password(self):
+        # too short of a password
+        self.assertFalse(self.auth.register('admin', ''))
+        self.assertFalse(self.auth.register('admin', '1'))
 
     def test_list_users(self):
         auth = self.auth
@@ -50,6 +55,22 @@ class AclTestCase(TestCase):
         user = auth.getUser('user')
         self.assertEqual(user.name, 'User Name')
         self.assertEqual(user.email, 'user@example.com')
+
+    def test_edit_passwd(self):
+        auth = self.auth
+        auth.register('user', 'password')
+        user = auth.getUser('user')
+        self.assertTrue(auth.validate('user', 'password'))
+
+        self.assertFalse(auth.updatePassword('user', None))
+        self.assertTrue(auth.validate('user', 'password'))
+
+        self.assertFalse(auth.updatePassword('user', 'short'))
+        self.assertTrue(auth.validate('user', 'password'))
+
+        self.assertTrue(auth.updatePassword('user', 'secret'))
+        self.assertFalse(auth.validate('user', 'password'))
+        self.assertTrue(auth.validate('user', 'secret'))
 
     def test_dupe_register(self):
         auth = self.auth

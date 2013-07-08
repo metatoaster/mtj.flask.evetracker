@@ -26,9 +26,15 @@ class User(Base):
 
     def __init__(self, login, password, name=None, email=None, *a, **kw):
         self.login = login
-        self.password = sha256_crypt.encrypt(password)
         self.name = name
         self.email = email
+        self.setPassword(password)
+
+    def setPassword(self, password):
+        # TODO fix this probable bad practices
+        assert isinstance(password, basestring)
+        assert len(password) > 5
+        self.password = sha256_crypt.encrypt(password)
 
 
 class Group(Base):
@@ -112,7 +118,11 @@ class SqlAcl(BaseAcl):
         return result
 
     def register(self, *a, **kw):
-        u = User(*a, **kw)
+        try:
+            u = User(*a, **kw)
+        except:
+            return False
+
         if self.getUser(u.login):
             return False
 
@@ -175,6 +185,21 @@ class SqlAcl(BaseAcl):
 
         user.name = name
         user.email = email
+
+        session = self.session()
+        session.merge(user)
+        session.commit()
+        return True
+
+    def updatePassword(self, login, password):
+        user = self.getUser(login)
+        if not user:
+            return False
+
+        try:
+            user.setPassword(password)
+        except:
+            return False
 
         session = self.session()
         session.merge(user)

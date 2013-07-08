@@ -87,6 +87,9 @@ class BaseAcl(object):
     def listUsers(self):
         return []
 
+    def updatePassword(self, login, password):
+        return False
+
 
 class SetupAcl(BaseAcl):
 
