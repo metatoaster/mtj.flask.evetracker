@@ -3,6 +3,20 @@
 {% block container %}
 
   <h1>User Control</h1>
-  <p>Hello, {{ user.login }} </p>
+  <p>Hello, {{ user.login|escape }}.</p>
+
+  <dl>
+  {% if not user.anonymous %}
+    <dt><a href="passwd">Change your password</a></dt>
+    <dd>You may change your password using this form</dd>
+  {% endif %}
+  {% if 'admin' in group_names %}
+    <dt><a href="add">Add new user</a></dt>
+    <dd>Add a new user to this site.</dd>
+
+    <dt><a href="list">List users</a></dt>
+    <dd>List all the users registered for this site.</dd>
+  {% endif %}
+  </dl>
 
 {% endblock %}

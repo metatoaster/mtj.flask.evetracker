@@ -16,13 +16,14 @@ class BaseUser(object):
 class AnonymousUser(BaseUser):
 
     def __init__(self, login=None, *a, **kw):
-        self.login = 'SpecialUser:Anonymous'
+        self.login = '<Anonymous>'
+        self.anonymous = True
 
     def __str__(self):
         return 'SpecialUser:Anonymous'
 
     def __repr__(self):
-        return '<Anonymous>'
+        return '<AnonymousUser>'
 
 anonymous = AnonymousUser()
 
