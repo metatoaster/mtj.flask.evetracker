@@ -114,7 +114,12 @@ class SqlAcl(BaseAcl):
             sha256_crypt.encrypt(password)
             return False
 
-        result = sha256_crypt.verify(password, user.password)
+        try:
+            result = sha256_crypt.verify(password, user.password)
+        except TypeError:
+            # this can be caused if password is empty.
+            return False
+
         return result
 
     def register(self, *a, **kw):

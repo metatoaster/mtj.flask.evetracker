@@ -85,6 +85,36 @@ class UserTestCase(unittest.TestCase):
             self.assertFalse('<a href="add">' in rv.data)
             self.assertFalse('<a href="list">' in rv.data)
 
+    def test_passwd(self):
+        with self.app.test_client() as c:
+            rv = c.post('/acl/login',
+                data={'login': 'admin', 'password': 'password'})
+
+            rv = c.post('/acl/passwd')
+            self.assertTrue('Please fill out all the required fields.'
+                in rv.data)
+
+            rv = c.post('/acl/passwd', data={
+                'old_password': 'fail', 'password': 'newpassword',
+                'confirm_password': 'failure'})
+            self.assertTrue('Old password incorrect' in rv.data)
+
+            rv = c.post('/acl/passwd', data={
+                'old_password': 'password', 'password': 'newpassword',
+                'confirm_password': 'failure'})
+            self.assertTrue('Password and confirmation password mismatched.'
+                in rv.data)
+
+            rv = c.post('/acl/passwd', data={
+                'old_password': 'password', 'password': '1',
+                'confirm_password': '1'})
+            self.assertTrue('New password too short.' in rv.data)
+
+            rv = c.post('/acl/passwd', data={
+                'old_password': 'password', 'password': '123456',
+                'confirm_password': '123456'})
+            self.assertTrue('Error updating password.' in rv.data)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -108,3 +108,36 @@ def edit(user_login):
     response = make_response(result)
     return response
 
+@acl_front.route('/passwd', methods=['GET', 'POST'])
+def passwd():
+    acl_back = current_app.config.get('MTJ_ACL')
+    result = error_msg = None
+    user = getCurrentUser()
+
+    if request.method == 'POST':
+        old_password = request.form.get('old_password')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        # verification is done all the way through, but in reverse order
+        if not (password and len(password) > 5):
+            error_msg = 'New password too short.'
+        if not password == confirm_password:
+            error_msg = 'Password and confirmation password mismatched.'
+        if not acl_back.validate(user.login, old_password):
+            error_msg = 'Old password incorrect.'
+        if not (old_password or password or confirm_password):
+            error_msg = 'Please fill out all the required fields.'
+
+        if not error_msg:
+            result = acl_back.updatePassword(user.login, password)
+            if result:
+                flash('Password updated')
+            else:
+                error_msg = 'Error updating password.'
+
+    result = render_template('user_passwd.jinja', user=user,
+        error_msg=error_msg)
+    response = make_response(result)
+    return response
+

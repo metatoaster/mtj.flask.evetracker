@@ -202,6 +202,37 @@ class UserSqlAclIntegrationTestCase(TestCase):
             self.assertTrue('name="name" value="User Name"' in rv.data)
             self.assertTrue('name="email" value="user@example.com"' in rv.data)
 
+    def test_passwd(self):
+        with self.app.test_client() as c:
+            rv = c.post('/acl/login',
+                data={'login': 'admin', 'password': 'password'})
+
+            # kind of a waste repeating it here but eh.
+            rv = c.post('/acl/passwd')
+            self.assertTrue('Please fill out all the required fields.'
+                in rv.data)
+
+            rv = c.post('/acl/passwd', data={
+                'old_password': 'fail', 'password': 'newpassword',
+                'confirm_password': 'failure'})
+            self.assertTrue('Old password incorrect' in rv.data)
+
+            rv = c.post('/acl/passwd', data={
+                'old_password': 'password', 'password': 'newpassword',
+                'confirm_password': 'failure'})
+            self.assertTrue('Password and confirmation password mismatched.'
+                in rv.data)
+
+            rv = c.post('/acl/passwd', data={
+                'old_password': 'password', 'password': '1',
+                'confirm_password': '1'})
+            self.assertTrue('New password too short.' in rv.data)
+
+            rv = c.post('/acl/passwd', data={
+                'old_password': 'password', 'password': '123456',
+                'confirm_password': '123456'})
+            self.assertTrue(self.auth.validate('admin', '123456'))
+
 
 def test_suite():
     suite = TestSuite()
