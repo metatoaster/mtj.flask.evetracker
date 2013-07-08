@@ -8,7 +8,9 @@
       </p>
     {% endif %}
 
-    <form method="post" class="form-horizontal offset2 span7">
+  <form method="post" class="form-horizontal offset2 span7">
+    <fieldset>
+      <legend>Edit User</legend>
       {{ g.csrf_input }}
 
       <div class="control-group">
@@ -49,6 +51,7 @@
         </div>
       </div>
 
-    </form>
+    </fieldset>
+  </form>
 
 {% endblock %}
