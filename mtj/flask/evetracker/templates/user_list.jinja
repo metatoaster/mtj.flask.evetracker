@@ -1,4 +1,4 @@
-{% extends "layout.jinja" %}
+{% extends "layout_tidytablejs.jinja" %}
 
 {% block container %}
 
@@ -39,46 +39,6 @@
 
 {% endblock %}
 
-{% block script %}
-
-    $(document).ready(function() {
-        var data = extractTable('#user_overview');
-        $('#user_overview').TidyTable({
-            tableClass     : "table table-bordered table-condensed"
-        },
-        {
-            columnTitles : data['thead'],
-            columnValues : data['tbody'],
-        });
-    });
-
-    function extractTable(selector) {
-        var thead = [];
-        var tbody = [];
-        var tbl = $(selector).find('table:first');
-
-        var m = tbl.find('thead tr:first th');
-        m.each(function(i) {
-            thead.push($(m[i]).html());
-        });
-
-        var m = tbl.find('tbody tr')
-        m.each(function(i) {
-            var row = [];
-            var n = $(m[i]).find('td');
-            n.each(function(j) {
-                row.push({
-                    'col_value': $(n[j]).html(),
-                    'value': $(n[j]).text()
-                });
-            });
-            tbody.push(row);
-        })
-
-        return {
-            'thead': thead,
-            'tbody': tbody
-        };
-    }
-
+{% block scriptvars %}
+    elemsel = '#user_overview';
 {% endblock %}
