@@ -16,6 +16,9 @@ from mtj.flask.evetracker import user
 from mtj.flask.evetracker import audit
 
 app = Flask('mtj.flask.evetracker')
+# welp, I made the mistake of naming all filenames with .jinja..
+# so no autoescape.  Forcing it all to be true.
+app.jinja_env.autoescape = True
 
 public_blueprints = {
     None: None,

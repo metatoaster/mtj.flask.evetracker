@@ -8,7 +8,7 @@
       </p>
     {% endif %}
     <form method="post" class="form">
-      {{ g.csrf_input }}
+      {{ g.csrf_input|safe }}
       <input type="text" class="input-block-level"
           placeholder="Class" name="table">
       <input type="text" class="input-block-level"

@@ -9,7 +9,7 @@
     {% endif %}
     <form method="post" class="form">
       <h4>Audit an item</h4>
-      {{ g.csrf_input }}
+      {{ g.csrf_input|safe }}
       <input type="text" class="input-block-level"
           placeholder="Description" name="reason">
       <select class="input-block-level combobox" id="category_name"
