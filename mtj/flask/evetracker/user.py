@@ -97,13 +97,18 @@ def add():
 def edit(user_login):
     acl_back = current_app.config.get('MTJ_ACL')
 
+    user = acl_back.getUser(user_login)
+    if user is anonymous or user is None:
+        # XXX catching both variations?
+        abort(404)
+
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
         acl_back.editUser(user_login, name, email)
         flash('User updated')
+        user = acl_back.getUser(user_login)
 
-    user = acl_back.getUser(user_login)
     result = render_template('user_edit.jinja', user=user)
     response = make_response(result)
     return response

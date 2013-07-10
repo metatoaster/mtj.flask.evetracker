@@ -202,6 +202,9 @@ class UserSqlAclIntegrationTestCase(TestCase):
             self.assertTrue('name="name" value="User Name"' in rv.data)
             self.assertTrue('name="email" value="user@example.com"' in rv.data)
 
+            rv = c.get('/acl/edit/nouser')
+            self.assertTrue('<h1>Not Found</h1>' in rv.data)
+
     def test_passwd(self):
         with self.app.test_client() as c:
             rv = c.post('/acl/login',
