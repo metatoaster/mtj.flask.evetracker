@@ -149,6 +149,15 @@ def passwd():
 
 # Group Management
 
+@acl_front.route('/group/list')
+@require_group('admin')
+def group_list():
+    acl_back = current_app.config.get('MTJ_ACL')
+    groups = acl_back.listGroups()
+    result = render_template('group_list.jinja', groups=groups)
+    response = make_response(result)
+    return response
+
 @acl_front.route('/group/user/<user_login>', methods=['GET', 'POST'])
 @require_group('admin')
 def group_user(user_login):

@@ -19,4 +19,12 @@
   {% endif %}
   </dl>
 
+  {% if 'admin' in group_names %}
+  <h4>Group Management</h4>
+  <dl>
+    <dt><a href="group/list">List groups</a></dt>
+    <dd>List all the groups available for this site.</dd>
+  </dl>
+  {% endif %}
+
 {% endblock %}

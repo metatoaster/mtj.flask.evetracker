@@ -275,6 +275,17 @@ class UserSqlAclIntegrationTestCase(TestCase):
             rv = c.get('/acl/edit/nouser')
             self.assertTrue('<h1>Not Found</h1>' in rv.data)
 
+    def test_group_list(self):
+        auth = self.auth
+        auth.addGroup('user')
+        auth.addGroup('reviewer')
+
+        with self.client as c:
+            rv = c.get('/acl/group/list')
+            self.assertTrue('<td>admin</td>' in rv.data)
+            self.assertTrue('<td>user</td>' in rv.data)
+            self.assertTrue('<td>reviewer</td>' in rv.data)
+
 
 def test_suite():
     suite = TestSuite()
