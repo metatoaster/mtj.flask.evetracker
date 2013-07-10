@@ -8,50 +8,52 @@
       </p>
     {% endif %}
 
-  <form method="post" class="form-horizontal offset2 span7">
-    <fieldset>
-      <legend>Edit User</legend>
-      {{ g.csrf_input }}
+  <div class="row"><div class="offset2 span8">
+    <form method="post" class="form-horizontal">
+      <fieldset>
+        <legend>Edit User</legend>
+        {{ g.csrf_input }}
 
-      <div class="control-group">
-        <label class="control-label" for="login">Login</label>
-        <div class="controls">
-          <input type="text" class="input-block-level" readonly=True
-              placeholder="Login" name="login" value="{{ user.login or '' }}">
+        <div class="control-group">
+          <label class="control-label" for="login">Login</label>
+          <div class="controls">
+            <input type="text" class="input-block-level" readonly=True
+                placeholder="Login" name="login" value="{{ user.login or '' }}">
+          </div>
         </div>
-      </div>
 
-      <div class="control-group">
-        <label class="control-label" for="password">Password</label>
-        <div class="controls">
-          <input type="password" class="input-block-level" readonly=True
-              placeholder="Password" name="password" value="********">
+        <div class="control-group">
+          <label class="control-label" for="password">Password</label>
+          <div class="controls">
+            <input type="password" class="input-block-level" readonly=True
+                placeholder="Password" name="password" value="********">
+          </div>
         </div>
-      </div>
 
-      <div class="control-group">
-        <label class="control-label" for="name">Name</label>
-        <div class="controls">
-          <input type="text" class="input-block-level"
-              placeholder="Name" name="name" value="{{ user.name or '' }}">
+        <div class="control-group">
+          <label class="control-label" for="name">Name</label>
+          <div class="controls">
+            <input type="text" class="input-block-level"
+                placeholder="Name" name="name" value="{{ user.name or '' }}">
+          </div>
         </div>
-      </div>
 
-      <div class="control-group">
-        <label class="control-label" for="email">Email</label>
-        <div class="controls">
-          <input type="text" class="input-block-level"
-              placeholder="Email" name="email" value="{{ user.email or '' }}">
+        <div class="control-group">
+          <label class="control-label" for="email">Email</label>
+          <div class="controls">
+            <input type="text" class="input-block-level"
+                placeholder="Email" name="email" value="{{ user.email or '' }}">
+          </div>
         </div>
-      </div>
 
-      <div class="control-group">
-        <div class="controls">
-          <button class="btn btn-primary" type="submit">Edit</button>
+        <div class="control-group">
+          <div class="controls">
+            <button class="btn btn-primary" type="submit">Edit</button>
+          </div>
         </div>
-      </div>
 
-    </fieldset>
-  </form>
+      </fieldset>
+    </form>
+  </div></div>
 
 {% endblock %}
