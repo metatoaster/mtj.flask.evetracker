@@ -11,8 +11,11 @@ import mtj.flask.evetracker
 from mtj.flask.evetracker import user
 from mtj.flask.evetracker import audit
 from mtj.flask.evetracker import csrf
+from mtj.flask.evetracker import acl
 
 from mtj.eve.tracker.tests import base
+
+testuser = acl.BaseUser('test_user')
 
 
 class AuditTestCase(unittest.TestCase):
@@ -21,7 +24,7 @@ class AuditTestCase(unittest.TestCase):
         base.setUp(self)
         app = Flask('mtj.flask.evetracker')
         app.config['SECRET_KEY'] = 'test_secret_key'
-        app.config['MTJ_CURRENT_USER'] = lambda: 'test_user'
+        app.config['MTJ_CURRENT_USER'] = lambda: testuser
         app.register_blueprint(audit.audit, url_prefix='/audit')
 
         app.config['TESTING'] = True
