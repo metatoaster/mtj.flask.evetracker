@@ -8,6 +8,10 @@ import mtj.flask.evetracker
 from mtj.flask.evetracker.acl import sql
 from mtj.flask.evetracker import user
 
+def filter_gn(groups):
+    results = [ug.name for ug in groups]
+    return tuple(sorted(results))
+
 
 class AclTestCase(TestCase):
 
@@ -95,10 +99,6 @@ class AclTestCase(TestCase):
         self.assertEqual(auth.getGroup('user').description, 'Normal users')
 
     def test_user_group(self):
-        def filter_gn(groups):
-            results = [ug.name for ug in groups]
-            return tuple(sorted(results))
-
         auth = self.auth
         auth.register('admin', 'password')
         auth.addGroup('user')
@@ -235,6 +235,45 @@ class UserSqlAclIntegrationTestCase(TestCase):
                 'old_password': 'password', 'password': '123456',
                 'confirm_password': '123456'})
             self.assertTrue(self.auth.validate('admin', '123456'))
+
+    def test_user_group(self):
+        auth = self.auth
+        auth.register('test_user', 'password')
+        auth.addGroup('user')
+        auth.addGroup('reviewer')
+
+        with self.client as c:
+            rv = c.get('/acl/group/user/test_user')
+            self.assertTrue('value="test_user"' in rv.data)
+            self.assertTrue('name="group" value="user"' in rv.data)
+            self.assertTrue('name="group" value="reviewer"' in rv.data)
+
+            # single group assignment
+            rv = c.post('/acl/group/user/test_user',
+                data={'group': 'user'})
+            test_user = auth.getUser('test_user')
+            self.assertEqual(filter_gn(auth.getUserGroups(test_user)),
+                (u'user',))
+            self.assertTrue('name="group" value="user" checked="checked"'
+                in rv.data)
+
+            # multiple group assignments
+            rv = c.post('/acl/group/user/test_user',
+                data={'group': ['user', 'reviewer']})
+            test_user = auth.getUser('test_user')
+            self.assertEqual(filter_gn(auth.getUserGroups(test_user)),
+                (u'reviewer', u'user'))
+
+            # non-existent group assignments
+            rv = c.post('/acl/group/user/test_user',
+                data={'group': ['user', 'fakegroup']})
+            test_user = auth.getUser('test_user')
+            self.assertEqual(filter_gn(auth.getUserGroups(test_user)),
+                (u'user',))
+
+            # Finally test that nouser will also 404.
+            rv = c.get('/acl/edit/nouser')
+            self.assertTrue('<h1>Not Found</h1>' in rv.data)
 
 
 def test_suite():

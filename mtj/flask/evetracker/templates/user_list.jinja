@@ -22,7 +22,12 @@
               <td>{{ user.login }}</td>
               <td>{{ user.name }}</td>
               <td>{{ user.email }}</td>
-              <td><a href="edit/{{ user.login }}">Edit</a></td>
+              <td>
+                <div class="btn-group">
+                  <a class="btn" href="edit/{{ user.login }}">Edit</a>
+                  <a class="btn" href="group/user/{{ user.login }}">Groups</a>
+                </div>
+              </td>
             </tr>
           {% endfor %}
 

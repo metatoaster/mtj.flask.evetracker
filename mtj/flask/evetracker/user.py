@@ -146,3 +146,27 @@ def passwd():
     response = make_response(result)
     return response
 
+
+# Group Management
+
+@acl_front.route('/group/user/<user_login>', methods=['GET', 'POST'])
+@require_group('admin')
+def group_user(user_login):
+    acl_back = current_app.config.get('MTJ_ACL')
+    error_msg = None
+
+    user = acl_back.getUser(user_login)
+    if user is anonymous or user is None:
+        abort(404)
+
+    if request.method == 'POST':
+        acl_back.setUserGroups(user, request.form.getlist('group'))
+
+    all_groups = acl_back.listGroups()
+    user_groups_names = [ug.name for ug in acl_back.getUserGroups(user)]
+
+    result = render_template('group_user.jinja', user=user,
+        user_groups_names=user_groups_names, all_groups=all_groups,
+        error_msg=error_msg)
+    response = make_response(result)
+    return response
