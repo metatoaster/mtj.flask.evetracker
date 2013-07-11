@@ -137,6 +137,48 @@ class AclTestCase(TestCase):
         self.assertEqual(auth.getGroupPermits(group), {'admin', '__test'})
         flask._permits.remove('__test')
 
+    def test_user_permit(self):
+        flask._permits.add('__test1')
+        flask._permits.add('__test2')
+
+        auth = self.auth
+        auth.addGroup('user')
+        auth.addGroup('nimda')
+        auth.register('user1', 'secret')
+        auth.register('user2', 'secret')
+
+        group_user = auth.getGroup('user')
+        group_nimda = auth.getGroup('nimda')
+        user1 = auth.getUser('user1')
+        user2 = auth.getUser('user2')
+
+        # null case
+        self.assertEqual(auth.getUserPermits(user1), set())
+
+        auth.setGroupPermits(group_user, ('__test1', '__test2'))
+        auth.setGroupPermits(group_nimda, ('admin', '__test2'))
+
+        auth.setUserGroups(user1, ('user',))
+        self.assertEqual(auth.getUserPermits(user1), {'__test1', '__test2'})
+
+        auth.setUserGroups(user2, ('nimda',))
+        self.assertEqual(auth.getUserPermits(user2), {'admin', '__test2'})
+
+        auth.setUserGroups(user1, ('user', 'nimda',))
+        self.assertEqual(auth.getUserPermits(user1),
+            {'admin', '__test1', '__test2'})
+
+        auth.setGroupPermits(group_user, ('__test2',))
+        self.assertEqual(auth.getUserPermits(user1), {'admin', '__test2'})
+        self.assertEqual(auth.getUserPermits(user2), {'admin', '__test2'})
+
+        auth.setGroupPermits(group_nimda, ())
+        self.assertEqual(auth.getUserPermits(user1), {'__test2'})
+        self.assertEqual(auth.getUserPermits(user2), set())
+
+        flask._permits.remove('__test1')
+        flask._permits.remove('__test2')
+
     def test_setup_login(self):
         auth = sql.SqlAcl(setup_login='admin')
         self.assertEqual(auth.getUser('admin'), None)
