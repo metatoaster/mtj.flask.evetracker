@@ -251,3 +251,14 @@ class SqlAcl(BaseAcl):
         results = set(i[0] for i in q.all())
         session.close()
         return results
+
+    def getUserPermits(self, user):
+        session = self.session()
+        q = session.query(GroupPermit.permit).join(Group,
+            GroupPermit.group == Group.name).filter(Group.name.in_(
+                session.query(UserGroup.group).filter(
+                    UserGroup.user == user.login)
+                ))
+        results = set(i[0] for i in q.all())
+        session.close()
+        return results

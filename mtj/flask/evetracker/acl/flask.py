@@ -28,10 +28,6 @@ def verifyUserGroupByName(group):
     return True
 
 def verifyUserPermit(permit):
-    # XXX backwards compatible behavior
-    if permit in getCurrentUserGroupNames():
-        return True
-
     user = getCurrentUser()
     acl_back = current_app.config.get('MTJ_ACL')
     if not permit in acl_back.getUserPermits(user):
