@@ -125,18 +125,17 @@ class AclTestCase(TestCase):
         auth = self.auth
         auth.addGroup('nimda')
         group = auth.getGroup('nimda')
-        self.assertEqual(auth.getGroupPermits(group), [])
+        self.assertEqual(auth.getGroupPermits(group), set())
         auth.setGroupPermits(group, ('admin',))
-        self.assertEqual(auth.getGroupPermits(group), ['admin',])
+        self.assertEqual(auth.getGroupPermits(group), {'admin',})
 
         auth.setGroupPermits(group, ('admin', 'test'))
-        self.assertEqual(auth.getGroupPermits(group), ['admin',])
+        self.assertEqual(auth.getGroupPermits(group), {'admin',})
 
-        flask._permits.add('test')
-        auth.setGroupPermits(group, ('admin', 'test'))
-        self.assertEqual(sorted(auth.getGroupPermits(group)),
-            ['admin', 'test'])
-        flask._permits.remove('test')
+        flask._permits.add('__test')
+        auth.setGroupPermits(group, ('admin', '__test'))
+        self.assertEqual(auth.getGroupPermits(group), {'admin', '__test'})
+        flask._permits.remove('__test')
 
     def test_setup_login(self):
         auth = sql.SqlAcl(setup_login='admin')

@@ -117,6 +117,10 @@ class SqlAcl(BaseAcl):
 
         self.setUserGroups(user, ('admin',))
 
+        permits = self.getGroupPermits(admin_grp)
+        permits.add('admin')
+        self.setGroupPermits(admin_grp, permits)
+
     def session(self):
         return self._sessions()
 
@@ -234,7 +238,7 @@ class SqlAcl(BaseAcl):
         session = self.session()
         session.query(GroupPermit).filter(
             GroupPermit.group == group.name).delete()
-        for permit in permits:
+        for permit in set(permits):
             if permit not in flask._permits:
                 continue
             session.merge(GroupPermit(group.name, permit))
@@ -244,6 +248,6 @@ class SqlAcl(BaseAcl):
         session = self.session()
         q = session.query(GroupPermit.permit).filter(
             GroupPermit.group == group.name)
-        results = [i[0] for i in q.all()]
+        results = set(i[0] for i in q.all())
         session.close()
         return results
