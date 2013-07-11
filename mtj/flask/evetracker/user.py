@@ -27,8 +27,8 @@ def login():
         return response
 
     error = None
-    login = request.form['login']
-    password = request.form['password']
+    login = request.form.get('login')
+    password = request.form.get('password')
     user = acl_back.authenticate(login, password)
 
     if user:
@@ -78,10 +78,10 @@ def add():
     acl_back = current_app.config.get('MTJ_ACL')
 
     if request.method == 'POST':
-        login = request.form['login']
-        password = request.form['password']
-        name = request.form['name']
-        email = request.form['email']
+        login = request.form.get('login')
+        password = request.form.get('password')
+        name = request.form.get('name')
+        email = request.form.get('email')
         result = acl_back.register(login, password, name, email)
         if result:
             flash('User created')
@@ -103,8 +103,8 @@ def edit(user_login):
         abort(404)
 
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
+        name = request.form.get('name')
+        email = request.form.get('email')
         acl_back.editUser(user_login, name, email)
         flash('User updated')
         return redirect(url_for('acl_front.edit', user_login=user_login))
