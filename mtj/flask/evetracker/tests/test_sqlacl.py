@@ -262,6 +262,7 @@ class UserSqlAclIntegrationTestCase(TestCase):
 
             rv = c.post('/acl/edit/admin',
                 data={'name': 'User Name', 'email': 'user@example.com'})
+            rv = c.get('/acl/edit/admin')
             self.assertTrue('name="name" value="User Name"' in rv.data)
             self.assertTrue('name="email" value="user@example.com"' in rv.data)
 

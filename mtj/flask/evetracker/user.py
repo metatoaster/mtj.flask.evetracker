@@ -107,7 +107,7 @@ def edit(user_login):
         email = request.form['email']
         acl_back.editUser(user_login, name, email)
         flash('User updated')
-        user = acl_back.getUser(user_login)
+        return redirect(url_for('acl_front.edit', user_login=user_login))
 
     result = render_template('user_edit.jinja', user=user)
     response = make_response(result)
