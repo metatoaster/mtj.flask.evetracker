@@ -181,3 +181,27 @@ def group_user(user_login):
         error_msg=error_msg)
     response = make_response(result)
     return response
+
+@acl_front.route('/group/edit/<group_name>', methods=['GET', 'POST'])
+@require_permit('admin')
+def group_edit(group_name):
+    acl_back = current_app.config.get('MTJ_ACL')
+
+    group = acl_back.getGroup(group_name)
+    if group is None:
+        abort(404)
+
+    if request.method == 'POST':
+        description = request.form.get('description')
+        acl_back.editGroup(group_name, description)
+        acl_back.setGroupPermits(group, request.form.getlist('permit'))
+        flash('Group updated')
+        return redirect(url_for('acl_front.group_edit', group_name=group_name))
+
+    group_permits = acl_back.getGroupPermits(group)
+    permits = getPermits()
+
+    result = render_template('group_edit.jinja',
+        group=group, permits=permits, group_permits=group_permits)
+    response = make_response(result)
+    return response

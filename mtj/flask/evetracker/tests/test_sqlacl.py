@@ -338,8 +338,45 @@ class UserSqlAclIntegrationTestCase(TestCase):
                 (u'user',))
 
             # Finally test that nouser will also 404.
-            rv = c.get('/acl/edit/nouser')
+            rv = c.get('/acl/group/edit/nouser')
             self.assertTrue('<h1>Not Found</h1>' in rv.data)
+
+    def test_group_permit(self):
+        flask._permits.add('__test1')
+        flask._permits.add('__test2')
+
+        auth = self.auth
+        auth.addGroup('test_group')
+        test_group = auth.getGroup('test_group')
+
+        with self.client as c:
+            rv = c.get('/acl/group/edit/test_group')
+            self.assertTrue('value="test_group"' in rv.data)
+            self.assertTrue('name="permit" value="__test1"' in rv.data)
+            self.assertTrue('name="permit" value="__test2"' in rv.data)
+
+            # single group assignment
+            rv = c.post('/acl/group/edit/test_group', data={
+                'description': 'Test',
+                'permit': ['__test2'],
+            })
+            rv = c.get('/acl/group/edit/test_group')
+            self.assertEqual(auth.getGroup('test_group').description, 'Test')
+            self.assertTrue('name="permit" value="__test2" checked="checked"'
+                in rv.data)
+
+            # non-existent group assignments
+            rv = c.post('/acl/group/edit/test_group', data={
+                'permit': ['__test1', 'nimda'],
+            })
+            self.assertEqual(auth.getGroupPermits(test_group), {'__test1'})
+
+            # Finally test that a missing group will 404.
+            rv = c.get('/acl/group/edit/no_group')
+            self.assertTrue('<h1>Not Found</h1>' in rv.data)
+
+        flask._permits.remove('__test1')
+        flask._permits.remove('__test2')
 
     def test_group_list(self):
         auth = self.auth

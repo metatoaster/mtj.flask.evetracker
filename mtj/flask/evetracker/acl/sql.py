@@ -217,6 +217,18 @@ class SqlAcl(BaseAcl):
         session.commit()
         return True
 
+    def editGroup(self, group_name, description=None):
+        group = self.getGroup(group_name)
+        if not group:
+            return False
+
+        group.description = description
+
+        session = self.session()
+        session.merge(group)
+        session.commit()
+        return True
+
     def updatePassword(self, login, password):
         user = self.getUser(login)
         if not user:

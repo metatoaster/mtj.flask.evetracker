@@ -1,0 +1,60 @@
+{% extends "layout.jinja" %}
+
+{% block container %}
+
+    {% if error_msg %}
+      <p class="text-error alert alert-error"><span class="label label-important">Error</span>
+        {{ error_msg }}
+      </p>
+    {% endif %}
+
+  <div class="row"><div class="offset2 span8">
+    <form method="post" class="form-horizontal">
+      <fieldset>
+        <legend>Edit Group</legend>
+        {{ g.csrf_input|safe }}
+
+        <div class="control-group">
+          <label class="control-label" for="name">Name</label>
+          <div class="controls">
+            <input type="text" class="input-block-level" readonly="readonly"
+                placeholder="Name" name="name" value="{{ group.name or '' }}">
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="description">Description</label>
+          <div class="controls">
+            <input type="text" class="input-block-level"
+                placeholder="Description" name="description"
+                value="{{ group.description or '' }}">
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label"
+              for="permit_assignment">Permit Assignment</label>
+          <div class="controls">
+
+          {% for permit in permits %}
+            <label class="checkbox">
+              <input type="checkbox" name="permit" value="{{ permit }}"{{
+                  permit in group_permits and ' checked="checked"' or '' }}>
+                <span>{{ permit }}</span>
+            </label>
+          {% endfor %}
+
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="controls">
+            <button class="btn btn-primary" type="submit">Edit</button>
+          </div>
+        </div>
+
+      </fieldset>
+    </form>
+  </div></div>
+
+{% endblock %}
