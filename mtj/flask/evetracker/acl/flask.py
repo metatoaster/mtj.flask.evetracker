@@ -25,7 +25,12 @@ def getCurrentUserGroupNames():
 def getCurrentUserPermits():
     user = getCurrentUser()
     acl_back = current_app.config.get('MTJ_ACL')
+    if acl_back is None:
+        return []
     return acl_back.getUserPermits(user)
+
+def getPermits():
+    return sorted(list(_permits))
 
 def verifyUserGroupByName(group):
     if not group in getCurrentUserGroupNames():
@@ -33,8 +38,10 @@ def verifyUserGroupByName(group):
     return True
 
 def verifyUserPermit(permit):
+    acl_back = current_app.config.get('MTJ_ACL')
     if not permit in getCurrentUserPermits():
-        abort(403)
+        if not current_app.config.get('MTJ_IGNORE_PERMIT'):
+            abort(403)
     return True
 
 def require_permit(permit_name):

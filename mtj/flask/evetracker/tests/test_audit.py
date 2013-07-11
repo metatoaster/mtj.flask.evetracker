@@ -28,6 +28,7 @@ class AuditTestCase(unittest.TestCase):
         app.register_blueprint(audit.audit, url_prefix='/audit')
 
         app.config['TESTING'] = True
+        app.config['MTJ_IGNORE_PERMIT'] = True
         self.app = app
         self.backend = zope.component.getUtility(ITrackerBackend)
 

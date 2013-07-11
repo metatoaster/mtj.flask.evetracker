@@ -99,6 +99,7 @@ class AclTestCase(TestCase):
         self.assertEqual(groups[1].description, 'Normal users')
 
         self.assertEqual(auth.getGroup('user').description, 'Normal users')
+        self.assertEqual(auth.getGroup('dummy'), None)
 
     def test_user_group(self):
         auth = self.auth
