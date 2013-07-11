@@ -89,6 +89,7 @@ class AclTestCase(TestCase):
 
     def test_group_base(self):
         auth = self.auth
+        auth.addGroup('admin',)
         auth.addGroup('user', 'Normal users')
 
         groups = auth.listGroups()
@@ -102,6 +103,7 @@ class AclTestCase(TestCase):
     def test_user_group(self):
         auth = self.auth
         auth.register('admin', 'password')
+        auth.addGroup('admin')
         auth.addGroup('user')
 
         admin_user = auth.getUser('admin')

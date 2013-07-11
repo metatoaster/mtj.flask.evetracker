@@ -98,11 +98,6 @@ class SqlAcl(BaseAcl):
 
         self.src = src
 
-        admin_grp = Group('admin', 'Adminstrator group')
-        session = self.session()
-        session.merge(admin_grp)
-        session.commit()
-
         setup_login = kw.pop('setup_login', None)
         setup_password = kw.pop('setup_password', None)
         if setup_login and setup_password:
@@ -110,9 +105,17 @@ class SqlAcl(BaseAcl):
 
     def _registerAdmin(self, setup_login, setup_password):
         result = self.register(login=setup_login, password=setup_password)
-        if result:
-            user = self.getUser(setup_login)
-            self.setUserGroups(user, ('admin',))
+        if not result:
+            return False
+
+        user = self.getUser(setup_login)
+
+        admin_grp = Group('admin', 'Adminstrator group')
+        session = self.session()
+        session.merge(admin_grp)
+        session.commit()
+
+        self.setUserGroups(user, ('admin',))
 
     def session(self):
         return self._sessions()
@@ -182,7 +185,7 @@ class SqlAcl(BaseAcl):
         all_groups = {g.name for g in self.listGroups()}
         session = self.session()
         session.query(UserGroup).filter(UserGroup.user == user.login).delete()
-        for group in groups:
+        for group in set(groups):
             if group not in all_groups:
                 continue
             session.add(UserGroup(user.login, group))
