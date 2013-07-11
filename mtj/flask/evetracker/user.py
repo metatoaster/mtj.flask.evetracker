@@ -59,7 +59,7 @@ def logout():
 @acl_front.route('/current')
 def current():
     result = render_template('user.jinja', user=getCurrentUser(),
-        group_names=getCurrentUserGroupNames())
+        permit_names=getCurrentUserPermits())
     response = make_response(result)
     return response
 

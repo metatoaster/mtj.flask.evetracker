@@ -22,15 +22,18 @@ def getCurrentUserGroupNames():
     acl_back = current_app.config.get('MTJ_ACL')
     return [gp.name for gp in acl_back.getUserGroups(user)]
 
+def getCurrentUserPermits():
+    user = getCurrentUser()
+    acl_back = current_app.config.get('MTJ_ACL')
+    return acl_back.getUserPermits(user)
+
 def verifyUserGroupByName(group):
     if not group in getCurrentUserGroupNames():
         abort(403)
     return True
 
 def verifyUserPermit(permit):
-    user = getCurrentUser()
-    acl_back = current_app.config.get('MTJ_ACL')
-    if not permit in acl_back.getUserPermits(user):
+    if not permit in getCurrentUserPermits():
         abort(403)
     return True
 

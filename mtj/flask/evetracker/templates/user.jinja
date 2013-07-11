@@ -10,7 +10,7 @@
     <dt><a href="passwd">Change your password</a></dt>
     <dd>You may change your password using this form</dd>
   {% endif %}
-  {% if 'admin' in group_names %}
+  {% if 'admin' in permit_names %}
     <dt><a href="add">Add new user</a></dt>
     <dd>Add a new user to this site.</dd>
 
@@ -19,7 +19,7 @@
   {% endif %}
   </dl>
 
-  {% if 'admin' in group_names %}
+  {% if 'admin' in permit_names %}
   <h4>Group Management</h4>
   <dl>
     <dt><a href="group/list">List groups</a></dt>
