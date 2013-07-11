@@ -341,6 +341,33 @@ class UserSqlAclIntegrationTestCase(TestCase):
             rv = c.get('/acl/group/edit/nouser')
             self.assertTrue('<h1>Not Found</h1>' in rv.data)
 
+    def test_group_add(self):
+        with self.client as c:
+            rv = c.post('/acl/group/add', data={
+                'name': 'testgroup',
+                'description': 'A new test group',
+            })
+            self.assertEqual(rv.headers['location'],
+                'http://localhost/acl/group/edit/testgroup')
+
+            rv = c.get('/acl/group/edit/testgroup')
+            self.assertTrue('value="testgroup"' in rv.data)
+            self.assertTrue('value="A new test group"' in rv.data)
+
+    def test_group_add_sanity_check(self):
+        with self.client as c:
+            rv = c.post('/acl/group/add', data={
+                'name': '',
+                'description': '',
+            })
+            self.assertNotEqual(rv.headers.get('location'),
+                'http://localhost/acl/group/edit/')
+            self.assertTrue('Name is required.' in rv.data)
+
+            rv = c.post('/acl/group/add', data={'name': 'test'})
+            rv = c.post('/acl/group/add', data={'name': 'test'})
+            self.assertTrue('already exists.' in rv.data)
+
     def test_group_permit(self):
         flask._permits.add('__test1')
         flask._permits.add('__test2')

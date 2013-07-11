@@ -182,6 +182,29 @@ def group_user(user_login):
     response = make_response(result)
     return response
 
+@acl_front.route('/group/add', methods=['GET', 'POST'])
+@require_permit('admin')
+def group_add():
+    acl_back = current_app.config.get('MTJ_ACL')
+    error_msg = None
+
+    if request.method == 'POST':
+        name = request.form.get('name')
+        description = request.form.get('description')
+        if not name:
+            error_msg = 'Name is required.'
+        if acl_back.getGroup(name):
+            error_msg = 'Group already exists.'
+
+        if error_msg is None:
+            acl_back.addGroup(name, description)
+            flash('Group added.')
+            return redirect(url_for('acl_front.group_edit', group_name=name))
+
+    result = render_template('group_add.jinja', error_msg=error_msg)
+    response = make_response(result)
+    return response
+
 @acl_front.route('/group/edit/<group_name>', methods=['GET', 'POST'])
 @require_permit('admin')
 def group_edit(group_name):
