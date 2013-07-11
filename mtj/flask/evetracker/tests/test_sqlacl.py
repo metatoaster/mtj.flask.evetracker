@@ -242,6 +242,8 @@ class UserSqlAclIntegrationTestCase(TestCase):
         auth.addGroup('user')
         auth.addGroup('reviewer')
 
+        test_user = auth.getUser('test_user')
+
         with self.client as c:
             rv = c.get('/acl/group/user/test_user')
             self.assertTrue('value="test_user"' in rv.data)
@@ -251,7 +253,7 @@ class UserSqlAclIntegrationTestCase(TestCase):
             # single group assignment
             rv = c.post('/acl/group/user/test_user',
                 data={'group': 'user'})
-            test_user = auth.getUser('test_user')
+            rv = c.get('/acl/group/user/test_user')
             self.assertEqual(filter_gn(auth.getUserGroups(test_user)),
                 (u'user',))
             self.assertTrue('name="group" value="user" checked="checked"'
@@ -260,14 +262,14 @@ class UserSqlAclIntegrationTestCase(TestCase):
             # multiple group assignments
             rv = c.post('/acl/group/user/test_user',
                 data={'group': ['user', 'reviewer']})
-            test_user = auth.getUser('test_user')
+            rv = c.get('/acl/group/user/test_user')
             self.assertEqual(filter_gn(auth.getUserGroups(test_user)),
                 (u'reviewer', u'user'))
 
             # non-existent group assignments
             rv = c.post('/acl/group/user/test_user',
                 data={'group': ['user', 'fakegroup']})
-            test_user = auth.getUser('test_user')
+            rv = c.get('/acl/group/user/test_user')
             self.assertEqual(filter_gn(auth.getUserGroups(test_user)),
                 (u'user',))
 

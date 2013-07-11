@@ -170,6 +170,8 @@ def group_user(user_login):
 
     if request.method == 'POST':
         acl_back.setUserGroups(user, request.form.getlist('group'))
+        flash('Groups assigned to user.')
+        return redirect(url_for('acl_front.group_user', user_login=user.login))
 
     all_groups = acl_back.listGroups()
     user_groups_names = [ug.name for ug in acl_back.getUserGroups(user)]
