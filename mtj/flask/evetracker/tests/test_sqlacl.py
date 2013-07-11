@@ -6,6 +6,7 @@ from werkzeug.exceptions import Forbidden
 import mtj.flask.evetracker
 
 from mtj.flask.evetracker.acl import sql
+from mtj.flask.evetracker.acl import flask
 from mtj.flask.evetracker import user
 
 def filter_gn(groups):
@@ -118,12 +119,30 @@ class AclTestCase(TestCase):
         auth.setUserGroups(admin_user, ('user', 'nimda'))
         self.assertEqual(filter_gn(auth.getUserGroups(admin_user)), ('user',))
 
+    def test_group_permit(self):
+        auth = self.auth
+        auth.addGroup('nimda')
+        group = auth.getGroup('nimda')
+        self.assertEqual(auth.getGroupPermits(group), [])
+        auth.setGroupPermits(group, ('admin',))
+        self.assertEqual(auth.getGroupPermits(group), ['admin',])
+
+        auth.setGroupPermits(group, ('admin', 'test'))
+        self.assertEqual(auth.getGroupPermits(group), ['admin',])
+
+        flask._permits.add('test')
+        auth.setGroupPermits(group, ('admin', 'test'))
+        self.assertEqual(sorted(auth.getGroupPermits(group)),
+            ['admin', 'test'])
+        flask._permits.remove('test')
+
     def test_setup_login(self):
         auth = sql.SqlAcl(setup_login='admin')
         self.assertEqual(auth.getUser('admin'), None)
         auth = sql.SqlAcl(setup_login='admin', setup_password='password')
         self.assertEqual(auth.getUser('admin').login, 'admin')
         self.assertTrue(auth.authenticate('admin', 'password'))
+        # XXX verify that the admin permit is set correctly.
 
         admin_grp = auth.getGroup('admin')
         self.assertEqual(admin_grp.name,

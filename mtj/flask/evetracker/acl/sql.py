@@ -9,6 +9,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from mtj.flask.evetracker.acl import BaseAcl
+from mtj.flask.evetracker.acl import flask
 
 Base = declarative_base()
 
@@ -60,6 +61,19 @@ class UserGroup(Base):
     def __init__(self, user, group):
         self.user = user
         self.group = group
+
+
+class GroupPermit(Base):
+
+    __tablename__ = 'group_permit'
+
+    id = Column(Integer, primary_key=True)
+    group = Column(String(255), index=True)
+    permit = Column(String(255), index=True)
+
+    def __init__(self, group, permit):
+        self.group = group
+        self.permit = permit
 
 
 class SqlAcl(BaseAcl):
@@ -210,3 +224,23 @@ class SqlAcl(BaseAcl):
         session.merge(user)
         session.commit()
         return True
+
+    # permits
+
+    def setGroupPermits(self, group, permits):
+        session = self.session()
+        session.query(GroupPermit).filter(
+            GroupPermit.group == group.name).delete()
+        for permit in permits:
+            if permit not in flask._permits:
+                continue
+            session.merge(GroupPermit(group.name, permit))
+        session.commit()
+
+    def getGroupPermits(self, group):
+        session = self.session()
+        q = session.query(GroupPermit.permit).filter(
+            GroupPermit.group == group.name)
+        results = [i[0] for i in q.all()]
+        session.close()
+        return results

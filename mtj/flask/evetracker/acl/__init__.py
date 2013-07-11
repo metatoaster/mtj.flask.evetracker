@@ -84,6 +84,9 @@ class BaseAcl(object):
     def getUserGroups(self, login):
         return []
 
+    def getUserPermits(self, login):
+        return []
+
     def listUsers(self):
         return []
 
@@ -120,3 +123,8 @@ class SetupAcl(BaseAcl):
 
     def listUsers(self):
         return [self.admin_user, BaseUser(self.login)]
+
+    def getUserPermits(self, user):
+        if user == self.admin_user:
+            return ['admin']
+        return []

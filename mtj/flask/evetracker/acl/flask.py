@@ -8,6 +8,8 @@ from . import anonymous
 
 # Flask helpers.
 
+_permits = set()
+
 def getCurrentUser():
     access_token = session.get('mtj.user', {})
     acl_back = current_app.config.get('MTJ_ACL', None)
@@ -25,15 +27,39 @@ def verifyUserGroupByName(group):
         abort(403)
     return True
 
-def require_group(group_name):
+def verifyUserPermit(permit):
+    # XXX backwards compatible behavior
+    if permit in getCurrentUserGroupNames():
+        return True
+
+    user = getCurrentUser()
+    acl_back = current_app.config.get('MTJ_ACL')
+    if not permit in acl_back.getUserPermits(user):
+        abort(403)
+    return True
+
+def require_permit(permit_name):
     """
-    A decorator around a raw view function.
+    A decorator for specifying the required permit to access the view
+    this is decorated against.
+
+    Permits are statically defined, and need to be hooked into groups
+    which then can be freely customized and assigned with the rights to
+    be granted.
     """
+
+    # Add the permit into some global list for ease of assignment.
+    # Ideally this should be within the app the function will ultimately
+    # be accessed from, but that is impossible to determine so just
+    # store the permit name into a global list available from within
+    # this module.
+
+    _permits.add(permit_name)
 
     def decorator(f):
         @functools.wraps(f)
         def wrapper(*a, **kw):
-            verifyUserGroupByName(group_name)
+            verifyUserPermit(permit_name)
             return f(*a, **kw)
         return wrapper
     return decorator

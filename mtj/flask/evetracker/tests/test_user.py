@@ -26,6 +26,10 @@ class UserTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def test_core(self):
+        # ensure the admin permit is correctly added.
+        self.assertTrue('admin' in acl.flask._permits)
+
     def test_login_pass(self):
         with self.app.test_client() as c:
             rv = c.post('/acl/login',

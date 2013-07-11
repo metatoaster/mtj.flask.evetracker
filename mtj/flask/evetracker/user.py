@@ -64,7 +64,7 @@ def current():
     return response
 
 @acl_front.route('/list')
-@require_group('admin')
+@require_permit('admin')
 def list():
     acl_back = current_app.config.get('MTJ_ACL')
     users = acl_back.listUsers()
@@ -73,7 +73,7 @@ def list():
     return response
 
 @acl_front.route('/add', methods=['GET', 'POST'])
-@require_group('admin')
+@require_permit('admin')
 def add():
     acl_back = current_app.config.get('MTJ_ACL')
 
@@ -93,7 +93,7 @@ def add():
     return response
 
 @acl_front.route('/edit/<user_login>', methods=['GET', 'POST'])
-@require_group('admin')
+@require_permit('admin')
 def edit(user_login):
     acl_back = current_app.config.get('MTJ_ACL')
 
@@ -150,7 +150,7 @@ def passwd():
 # Group Management
 
 @acl_front.route('/group/list')
-@require_group('admin')
+@require_permit('admin')
 def group_list():
     acl_back = current_app.config.get('MTJ_ACL')
     groups = acl_back.listGroups()
@@ -159,7 +159,7 @@ def group_list():
     return response
 
 @acl_front.route('/group/user/<user_login>', methods=['GET', 'POST'])
-@require_group('admin')
+@require_permit('admin')
 def group_user(user_login):
     acl_back = current_app.config.get('MTJ_ACL')
     error_msg = None
