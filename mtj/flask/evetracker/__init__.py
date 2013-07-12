@@ -47,7 +47,8 @@ def check_backdoor():
 def before_request():
     current_user = getCurrentUser()
     if not current_user == user.anonymous:
-        set_logged_in_g()
+        # User is logged in.
+        check_permissions()
         return
 
     # set the nav elements first.
@@ -83,22 +84,28 @@ def csrf_protect():
             # to reload the form in case of changes in hash.
             abort(403)
 
-def set_logged_in_g():
-    g.navbar = app.config['MTJ_FLASK_NAV']
+def check_permissions():
+    # navbar
+    navbar = app.config['MTJ_FLASK_NAV']
+
+    verifyBlueprintPermit()
+
+    set_json_root()
+    g.navbar = navbar
     g.aclbar = [
         (user.getCurrentUser().login, '/acl/current'),
         ('logout', '/acl/logout'),
     ]
 
+def set_json_root():
     json_prefix = app.config.get('MTJPOSTRACKER_JSON_PREFIX', 'json')
-
     # This is used by the javascript client.  Typically it is the same
     # instance as this.
     json_script_root = request.script_root
     # Alternatively a different one may be specified, but must be
     # accessible by the target end users.  This is for advanced usage.
+    # XXX expose this at the config/runner level.
     # json_script_root = 'http://example.com/mtj.eve.tracker/frontend'
-
     g.json_root = json_script_root + json_prefix
 
 @app.teardown_request

@@ -32,8 +32,6 @@ def login():
     user = acl_back.authenticate(login, password)
 
     if user:
-        session['logged_in'] = current_app.config.get(
-            'MTJ_LOGGED_IN', 'logged_in')
         session['mtj.user'] = user
         flash('Welcome %s' % user['login'])
         return redirect(request.script_root)
@@ -46,7 +44,7 @@ def login():
 
 @acl_front.route('/logout', methods=['GET', 'POST'])
 def logout():
-    if session.get('logged_in'):
+    if getCurrentUser() not in (None, anonymous):
         session.pop('logged_in', None)
         session.pop('mtj.user', None)
         # cripes bad way to display a message while ensuring the nav

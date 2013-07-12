@@ -67,6 +67,13 @@ class EveTrackerRunner(FlaskRunner):
 
     def prepare(self, app):
         super(EveTrackerRunner, self).prepare(app)
+
+        # XXX registering blueprint permit here.
+        json_prefix = app.config.get('MTJPOSTRACKER_JSON_PREFIX')
+        if json_prefix:
+            # XXX 'json_frontend' is magic
+            acl.flask.registerBlueprintPermit('json_frontend', 'pos_viewer')
+
         app.config['MTJ_ACL'] = self.acl
         # persist the secret so a form rendered before restart works
         # afterwards, but this maybe a security feature...
