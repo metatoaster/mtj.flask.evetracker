@@ -111,11 +111,9 @@ def edit(user_login):
     response = make_response(result)
     return response
 
-@acl_front.route('/passwd', methods=['GET', 'POST'])
-def passwd():
+def change_password_form(user):
     acl_back = current_app.config.get('MTJ_ACL')
     result = error_msg = None
-    user = getCurrentUser()
 
     if request.method == 'POST':
         old_password = request.form.get('old_password')
@@ -144,6 +142,11 @@ def passwd():
     response = make_response(result)
     return response
 
+@acl_front.route('/passwd', methods=['GET', 'POST'])
+@require_permit('self_passwd', 'admin')
+def passwd():
+    user = getCurrentUser()
+    return change_password_form(user)
 
 # Group Management
 

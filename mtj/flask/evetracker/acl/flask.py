@@ -54,19 +54,20 @@ def verifyUserGroupByName(group):
         abort(403)
     return True
 
-def verifyUserPermit(permit):
+def verifyUserPermit(*permits):
     acl_back = current_app.config.get('MTJ_ACL')
-    if not permit in getCurrentUserPermits():
-        if not current_app.config.get('MTJ_IGNORE_PERMIT'):
-            abort(403)
-    return True
+    for permit in permits:
+        if permit in getCurrentUserPermits():
+            return True
+    if not current_app.config.get('MTJ_IGNORE_PERMIT'):
+        abort(403)
 
 def verifyBlueprintPermit():
     blueprint_permit = getBlueprintPermit(request.blueprint)
     if blueprint_permit:
         verifyUserPermit(blueprint_permit)
 
-def require_permit(permit_name):
+def require_permit(*permit_names):
     """
     A decorator for specifying the required permit to access the view
     this is decorated against.
@@ -82,12 +83,13 @@ def require_permit(permit_name):
     # store the permit name into a global list available from within
     # this module.
 
-    registerPermit(permit_name)
+    for permit_name in permit_names:
+        registerPermit(permit_name)
 
     def decorator(f):
         @functools.wraps(f)
         def wrapper(*a, **kw):
-            verifyUserPermit(permit_name)
+            verifyUserPermit(*permit_names)
             return f(*a, **kw)
         return wrapper
     return decorator

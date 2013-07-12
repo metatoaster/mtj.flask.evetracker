@@ -6,7 +6,7 @@
   <p>Hello, {{ user.login|escape }}.</p>
 
   <dl>
-  {% if not user.anonymous %}
+  {% if 'self_passwd' in permit_names or 'admin' in permit_names %}
     <dt><a href="passwd">Change your password</a></dt>
     <dd>You may change your password using this form</dd>
   {% endif %}

@@ -40,6 +40,11 @@ class PermitTestCase(unittest.TestCase):
         def restricted():
             return 'Test Success'
 
+        @self.test_bp.route('/34')
+        @require_permit('__test3', '__test4')
+        def r34():
+            return 'Test Success'
+
     def tearDown(self):
         # TODO make and call method to reset all the permits
         registerBlueprintPermit(self.test_bp, None)
@@ -91,6 +96,28 @@ class PermitTestCase(unittest.TestCase):
 
             self.auth.setGroupPermits(self.testgroup, ('__test1', '__test2',))
             rv = client.get('/test_bp/restricted')
+            self.assertEqual(rv.data, 'Test Success')
+
+    def test_blueprint_permit_multi_for_view(self):
+        test_bp = self.test_bp
+        self.app.register_blueprint(test_bp, url_prefix='/test_bp')
+
+        with self.app.test_client() as client:
+            with client.session_transaction() as sess:
+                sess['mtj.user'] = self.auth.generateAccessToken('testuser')
+            rv = client.get('/test_bp/34')
+            self.assertNotEqual(rv.data, 'Test Success')
+
+            self.auth.setGroupPermits(self.testgroup, ('__test3',))
+            rv = client.get('/test_bp/34')
+            self.assertEqual(rv.data, 'Test Success')
+
+            self.auth.setGroupPermits(self.testgroup, ('__test4',))
+            rv = client.get('/test_bp/34')
+            self.assertEqual(rv.data, 'Test Success')
+
+            self.auth.setGroupPermits(self.testgroup, ('__test3', '__test4',))
+            rv = client.get('/test_bp/34')
             self.assertEqual(rv.data, 'Test Success')
 
 
