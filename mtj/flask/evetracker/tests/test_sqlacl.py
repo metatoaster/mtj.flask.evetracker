@@ -300,6 +300,38 @@ class UserSqlAclIntegrationTestCase(TestCase):
                 'confirm_password': '123456'})
             self.assertTrue(self.auth.validate('admin', '123456'))
 
+    def test_passwd_other(self):
+        self.auth.register('test_user', 'password')
+
+        with self.app.test_client() as c:
+            rv = c.post('/acl/login',
+                data={'login': 'admin', 'password': 'password'})
+
+            rv = c.post('/acl/passwd/test_user')
+            self.assertTrue('New password too short.' in rv.data)
+
+            rv = c.post('/acl/passwd/test_user', data={
+                'password': 'newpassword', 'confirm_password': 'failure'})
+            self.assertTrue('Password and confirmation password mismatched.'
+                in rv.data)
+
+            rv = c.post('/acl/passwd/test_user', data={
+                'password': '1', 'confirm_password': '1'})
+            self.assertTrue('New password too short.' in rv.data)
+
+            rv = c.post('/acl/passwd/test_user', data={
+                'password': '123456', 'confirm_password': '123456'})
+            self.assertTrue(self.auth.validate('test_user', '123456'))
+
+    def test_passwd_noperm(self):
+        self.auth.register('test_user', 'password')
+        with self.app.test_client() as c:
+            rv = c.post('/acl/login',
+                data={'login': 'test_user', 'password': 'password'})
+
+            rv = c.get('/acl/passwd')
+            self.assertEqual(rv.status_code, 403)
+
     def test_user_group(self):
         auth = self.auth
         auth.register('test_user', 'password')

@@ -111,7 +111,7 @@ def edit(user_login):
     response = make_response(result)
     return response
 
-def change_password_form(user):
+def change_password_form(user, admin_mode=False):
     acl_back = current_app.config.get('MTJ_ACL')
     result = error_msg = None
 
@@ -125,10 +125,12 @@ def change_password_form(user):
             error_msg = 'New password too short.'
         if not password == confirm_password:
             error_msg = 'Password and confirmation password mismatched.'
-        if not acl_back.validate(user.login, old_password):
-            error_msg = 'Old password incorrect.'
-        if not (old_password or password or confirm_password):
-            error_msg = 'Please fill out all the required fields.'
+        if not admin_mode:
+            if not acl_back.validate(user.login, old_password):
+                error_msg = 'Old password incorrect.'
+        if not admin_mode:
+            if not (old_password or password or confirm_password):
+                error_msg = 'Please fill out all the required fields.'
 
         if not error_msg:
             result = acl_back.updatePassword(user.login, password)
@@ -138,7 +140,7 @@ def change_password_form(user):
                 error_msg = 'Error updating password.'
 
     result = render_template('user_passwd.jinja', user=user,
-        error_msg=error_msg)
+        admin_mode=admin_mode, error_msg=error_msg)
     response = make_response(result)
     return response
 
@@ -147,6 +149,16 @@ def change_password_form(user):
 def passwd():
     user = getCurrentUser()
     return change_password_form(user)
+
+@acl_front.route('/passwd/<user_login>', methods=['GET', 'POST'])
+@require_permit('admin')
+def passwd_admin(user_login):
+    acl_back = current_app.config.get('MTJ_ACL')
+    user = acl_back.getUser(user_login)
+    if user is anonymous or user is None:
+        # XXX catching both variations?
+        abort(404)
+    return change_password_form(user, admin_mode=True)
 
 # Group Management
 

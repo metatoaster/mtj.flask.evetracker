@@ -14,6 +14,7 @@
         <legend>Change password</legend>
         {{ g.csrf_input|safe }}
 
+        {% if not admin_mode %}
         <div class="control-group">
           <label class="control-label" for="login">Old Password</label>
           <div class="controls">
@@ -21,6 +22,7 @@
                 placeholder="Old Password" name="old_password" value="">
           </div>
         </div>
+        {% endif %}
 
         <div class="control-group">
           <label class="control-label" for="password">New Password</label>
