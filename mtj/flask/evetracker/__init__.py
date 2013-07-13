@@ -46,7 +46,7 @@ def check_backdoor():
 @app.before_request
 def before_request():
     current_user = getCurrentUser()
-    if not current_user == user.anonymous:
+    if not current_user in (user.anonymous, None):
         # User is logged in.
         check_permissions()
         return
@@ -70,7 +70,7 @@ def before_request():
 @app.before_request
 def csrf_protect():
     current_user = user.getCurrentUser()
-    if current_user == user.anonymous:
+    if current_user in (user.anonymous, None):
         # zero protection for anonymous users.
         return
 
