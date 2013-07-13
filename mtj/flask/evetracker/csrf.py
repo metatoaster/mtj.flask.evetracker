@@ -7,13 +7,14 @@ from mtj.flask.evetracker import user
 csrf_key = '_authenticator'
 
 
-def randstr(b=128):
-    try:
-        r = random.SystemRandom()
-    except:
-        r = random
+def randstr(b=128, r=None):
+    if r is None:
+        try:
+            r = random.SystemRandom().getrandbits
+        except:
+            r = random.getrandbits
 
-    return (('%%%ds' % (b / 4)) % hex(r.getrandbits(b))[2:]).replace(' ', '0')
+    return (('%%%ds' % (b / 4)) % hex(r(b))[2:]).replace(' ', '0')
 
 
 class Authenticator(object):

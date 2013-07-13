@@ -14,6 +14,20 @@ class DummyACL(object):
         return session.get('dummy_user', anonymous)
 
 
+class RandTestCase(TestCase):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_core(self):
+        self.assertEqual('0' * 32, csrf.randstr(b=128, r=lambda x: 0))
+        self.assertEqual('0' * 31, csrf.randstr(b=124, r=lambda x: 0))
+        self.assertEqual('0' * 30 + '1', csrf.randstr(b=124, r=lambda x: 1))
+
+
 class CsrfTestCase(TestCase):
 
     def setUp(self):
@@ -72,6 +86,7 @@ class CsrfFlaskTestCase(TestCase):
 
 def test_suite():
     suite = TestSuite()
+    suite.addTest(makeSuite(RandTestCase))
     suite.addTest(makeSuite(CsrfTestCase))
     suite.addTest(makeSuite(CsrfFlaskTestCase))
     return suite
