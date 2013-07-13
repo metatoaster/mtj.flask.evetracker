@@ -132,7 +132,10 @@ class SqlAcl(BaseAcl):
             # crypting/comparing the result.
             # TODO verify timings as crypt.verify does a bit more than
             # this.
-            sha256_crypt.encrypt(password)
+            try:
+                sha256_crypt.encrypt(password)
+            except:
+                pass
             return False
 
         try:
