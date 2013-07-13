@@ -13,7 +13,7 @@ def randstr(b=128):
     except:
         r = random
 
-    return ('%x' % r.getrandbits(b)).decode('hex')
+    return (('%%%ds' % (b / 4)) % hex(r.getrandbits(b))[2:]).replace(' ', '0')
 
 
 class Authenticator(object):
