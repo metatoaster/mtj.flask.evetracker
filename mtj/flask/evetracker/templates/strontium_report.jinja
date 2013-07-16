@@ -1,0 +1,55 @@
+{% extends "layout_tidytablejs.jinja" %}
+
+{% block container %}
+
+    <h1>Strontium Report</h1>
+    <h5>The following are towers not timed to the optimum length of {{
+        target_length }} hours.</h5>
+
+      <div id="pos">
+
+        <div id="strontium_report" class="tower-listing">
+
+        <table class="table table-bordered table-condensed">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Label</th>
+              <th>Region</th>
+              <th>Moon</th>
+              <th>Tower</th>
+              <th>Current Length</th>
+              <th>Target</th>
+              <th>Need</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for tower in towers %}
+            <tr>
+              <td title="{{ tower['state'] }}"><span class="state-{{
+                  tower['state'] }}"></span></td>
+              <td>{{ tower['label'] }}</td>
+              <td>{{ tower['region'] }}</td>
+              <td>{{ tower['celestial'] }}</td>
+              <td>{{ tower['tower'] }}</td>
+              <td title="{{ tower['currentLength'] }}">{{
+                  tower['currentLengthFormatted']
+              }}</td>
+              <td>{{ tower['strontiumTarget'] }}</td>
+              <td>{{ tower['strontiumDiff'] }}</td>
+              <td><a href="{{ url_for('towers.tower_id', tower_id=tower['id'])
+                  }}"><i class="icon-search"></i> details</a></td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+
+        </div>
+      </div>
+
+{% endblock %}
+
+{% block scriptvars %}
+    elemsel = '#strontium_report';
+{% endblock %}

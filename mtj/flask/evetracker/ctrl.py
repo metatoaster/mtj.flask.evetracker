@@ -26,6 +26,9 @@ class EveTrackerOptions(Options):
             'backdoor': None,
             'logged_in': 'logged_in',
         },
+        'defaults': {
+            'target_reinforce': None,
+        },
     })
 
     _schema = {}
@@ -41,6 +44,9 @@ class EveTrackerOptions(Options):
         'acl': {
             'backdoor': basestring,
             'logged_in': basestring,
+        },
+        'defaults': {
+            'target_reinforce': int,
         },
     })
 
@@ -83,6 +89,12 @@ class EveTrackerRunner(FlaskRunner):
         app.config['MTJ_LOGGED_IN'] = self.config.get('acl').get('logged_in')
         if self.config.get('acl').get('backdoor'):
             app.config['MTJ_BACKDOOR'] = self.config.get('acl').get('backdoor')
+
+        target_reinforce = self.config.get('defaults', {}).get(
+            'target_reinforce')
+
+        if target_reinforce:
+            app.config['MTJ_DEFAULT_REINFORCE'] = target_reinforce
 
 
 if __name__ == "__main__":
