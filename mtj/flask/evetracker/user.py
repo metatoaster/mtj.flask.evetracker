@@ -22,7 +22,7 @@ def login():
         return response
 
     if request.method == 'GET':
-        result = render_template('login.jinja')
+        result = render_template('login.jinja', next=request.args.get('n'))
         response = make_response(result)
         return response
 
@@ -34,11 +34,13 @@ def login():
     if user:
         session['mtj.user'] = user
         flash('Welcome %s' % user['login'])
-        return redirect(request.script_root)
+        script_root = getattr(request, 'script_root', '')
+        return redirect(script_root + request.form.get('next', ''))
     else:
         error = 'Invalid credentials'
 
-    result = render_template('login.jinja', error_msg=error)
+    result = render_template('login.jinja', error_msg=error,
+        next=request.form.get('next'))
     response = make_response(result)
     return response
 

@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+from urllib import quote_plus
+
 from flask import Blueprint, Flask, request, g, make_response, render_template
 from flask import session, redirect, url_for, abort, current_app
 
@@ -132,7 +134,8 @@ def static_app_index():
 
 @app.errorhandler(401)
 def http_401(error):
-    return render_template('http.401.jinja'), error.code
+    target = quote_plus(request.path)
+    return render_template('http.401.jinja', target=target), error.code
 
 @app.errorhandler(402)
 @app.errorhandler(403)

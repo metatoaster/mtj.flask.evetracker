@@ -11,7 +11,7 @@
           You don't have permission to access this resource.
         {% else %}
           You are not logged in.
-          <a href="{{ request.script_root }}/acl/login">Please log in</a>.
+          <a href="{{ request.script_root }}/acl/login?n={{ target }}">Please log in</a>.
         {% endif %}
       </p>
     </div>

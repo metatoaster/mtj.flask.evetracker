@@ -30,11 +30,38 @@ class UserTestCase(unittest.TestCase):
         # ensure the admin permit is correctly added.
         self.assertTrue('admin' in acl.flask._permits)
 
+    def test_login_form(self):
+        with self.app.test_client() as c:
+            rv = c.get('/acl/login')
+            self.assertFalse('<input type="hidden" name="next"' in rv.data)
+
+            rv = c.get('/acl/login?n=%2Fpage')
+            self.assertTrue('<input type="hidden" name="next" value="/page"' 
+                in rv.data)
+
+            rv = c.post('/acl/login',
+                data={'login': 'admin', 'password': 'wrongpassword'})
+            self.assertFalse('<input type="hidden" name="next"' in rv.data)
+
+            rv = c.post('/acl/login',
+                data={'login': 'admin', 'password': 'wrongpassword',
+                    'next': '/page'})
+            self.assertTrue('<input type="hidden" name="next" value="/page"' 
+                in rv.data)
+
     def test_login_pass(self):
         with self.app.test_client() as c:
             rv = c.post('/acl/login',
                 data={'login': 'admin', 'password': 'password'})
             self.assertEqual(rv.status_code, 302)
+            self.assertEqual(rv.headers['location'], 'http://localhost/')
+
+        with self.app.test_client() as c:
+            rv = c.post('/acl/login',
+                data={'login': 'admin', 'password': 'password',
+                    'next': '/page'})
+            self.assertEqual(rv.status_code, 302)
+            self.assertEqual(rv.headers['location'], 'http://localhost/page')
 
     def test_login_fail(self):
         with self.app.test_client() as c:
