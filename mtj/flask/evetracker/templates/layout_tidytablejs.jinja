@@ -29,10 +29,18 @@
         m.each(function(i) {
             var row = [];
             var n = $(m[i]).find('td');
+
             n.each(function(j) {
+                var node = $(n[j]);
+                var title = node.attr('title');
+                var value = title ? title : node.text();
+                var value_num = Number(value);
+                value = isNaN(value_num) ? value : value_num;
+
                 row.push({
-                    'col_value': $(n[j]).html(),
-                    'value': $(n[j]).text()
+                    'col_value': node.html(),
+                    'value': value,
+                    'title_value': title
                 });
             });
             tbody.push(row);
