@@ -1,3 +1,6 @@
+from mtj.flask.evetracker.acl.flask import registerBlueprintPermit
+
+
 class ReverseProxied(object):
     '''Wrap the application in this middleware and configure the
     front-end server to add these headers, to let you quietly bind
@@ -56,10 +59,13 @@ class PdbPostMortemLayer(object):
             raise
 
 
-def register_blueprint_navbar(app, blueprint, url_prefix, **kw):
+def register_blueprint_navbar(app, blueprint, url_prefix, permit=None, **kw):
     app.register_blueprint(blueprint, url_prefix=url_prefix, **kw)
     nav = app.config.get('MTJ_FLASK_NAV')
     if not nav:
         nav = []
         app.config['MTJ_FLASK_NAV'] = nav
     nav.append((blueprint.name, url_prefix))
+
+    if permit:
+        registerBlueprintPermit(blueprint, permit)

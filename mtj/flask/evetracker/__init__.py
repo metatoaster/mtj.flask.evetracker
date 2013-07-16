@@ -85,10 +85,13 @@ def csrf_protect():
             abort(403)
 
 def check_permissions():
-    # navbar
-    navbar = app.config['MTJ_FLASK_NAV']
-
     verifyBlueprintPermit()
+
+    navbar = []
+    for blueprint, prefix in app.config['MTJ_FLASK_NAV']:
+        permit = getBlueprintPermit(blueprint)
+        if permit is None or permit in getCurrentUserPermits():
+            navbar.append((blueprint, prefix))
 
     set_json_root()
     g.navbar = navbar
@@ -136,9 +139,12 @@ def http_error(error):
     else:
         raise error
 
-util.register_blueprint_navbar(app, pos.overview, url_prefix='/overview')
-util.register_blueprint_navbar(app, pos.tower, url_prefix='/tower')
-util.register_blueprint_navbar(app, audit.audit, url_prefix='/audit')
+util.register_blueprint_navbar(app, pos.overview, url_prefix='/overview',
+    permit='pos_viewer')
+util.register_blueprint_navbar(app, pos.tower, url_prefix='/tower',
+    permit='pos_viewer')
+util.register_blueprint_navbar(app, audit.audit, url_prefix='/audit',
+    permit='audit_viewer')
 
 app.register_blueprint(user.acl_front, url_prefix='/acl')
 
