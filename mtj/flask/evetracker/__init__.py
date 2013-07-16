@@ -45,6 +45,8 @@ def check_backdoor():
 
 @app.before_request
 def before_request():
+    g.site_root = request.script_root or '/'
+
     current_user = getCurrentUser()
     if not current_user in (user.anonymous, None):
         # User is logged in.
@@ -117,6 +119,13 @@ def teardown_request(exception):
 
 @app.route('/')
 def app_index():
+    # TODO make this configurable?
+    return redir_app_index()
+
+def redir_app_index():
+    return redirect(url_for('overview.overview_index'))
+
+def static_app_index():
     result = render_template('index.jinja')
     response = make_response(result)
     return response
