@@ -10,9 +10,11 @@
             <input id="region" type="text" placeholder="Region" />
             <input id="celestial" type="text" placeholder="Moon" />
           </span>
-          <span class="span2 pull-right">
+          <span class="span2 pull-right btn-group">
             <button type="button" id="showAll" class="btn btn-primary"
-                data-toggle="button">Toggle Outdated</button>
+                data-toggle="button">Outdated</button>
+            <button type="button" id="showIgnore" class="btn btn-primary"
+                data-toggle="button">Ignored</button>
           </span>
         </form>
 
@@ -41,6 +43,7 @@
 
 {% block script %}
 
+    var ignoreCheck = /\[ignore\]/i;
     var towers = [];
 
     var regions = [];
@@ -68,10 +71,16 @@
             }
 
             towers = data.towers;
-            _populateTowers(false);
+            _populateTowers();
             $('#showAll').bind('click', function() {
-                var showAll = (!$('#showAll').hasClass('active'));
-                _populateTowers(showAll);
+                setTimeout(function() {
+                    _populateTowers();
+                }, 1);
+            });
+            $('#showIgnore').bind('click', function() {
+                setTimeout(function() {
+                    _populateTowers();
+                }, 1);
             });
 
             $('#region').typeahead({
@@ -115,26 +124,30 @@
     });
 
     function populateTowers() {
-        var showAll = ($('#showAll').hasClass('active'));
         if ((lastRegion != $('#region').val().toLowerCase()) ||
                 (lastCelestial != $('#celestial').val().toLowerCase()) ||
                 (lastLabel != $('#label').val().toLowerCase())
             ) {
-            _populateTowers(showAll);
+            _populateTowers();
             lastRegion = $('#region').val().toLowerCase();
             lastCelestial = $('#celestial').val().toLowerCase();
             lastLabel = $('#label').val().toLowerCase();
         }
     }
 
-    function _populateTowers(showAll) {
+    function _populateTowers() {
+        var showAll = ($('#showAll').hasClass('active'));
+        var showIgnore = ($('#showIgnore').hasClass('active'));
         var values = [];
 
         for (var key in towers) {
             var item = towers[key];
             var value = towerToValue(item, script_root + '/tower/');
 
-            if ((item.apiTimestamp != null) || showAll) {
+            if (
+                ((item.apiTimestamp != null) || showAll) &&
+                ((!ignoreCheck.test(item.auditLabel)) || showIgnore)
+            ) {
                 if (regions.indexOf(item.regionName) < 0) {
                     regions.push(item.regionName);
                 }
