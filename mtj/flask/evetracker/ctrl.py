@@ -1,5 +1,6 @@
 from __future__ import unicode_literals  # we are using json anyway.
 
+import logging
 import importlib
 
 from mtj.eve.tracker.ctrl import FlaskRunner, Options, main
@@ -7,6 +8,8 @@ from mtj.flask.evetracker import app
 from mtj.flask.evetracker import acl
 from mtj.flask.evetracker import csrf
 from mtj.flask.evetracker import user
+
+logger = logging.getLogger('mtj.flask.evetracker.ctrl')
 
 
 class EveTrackerOptions(Options):
