@@ -2,6 +2,15 @@ from __future__ import unicode_literals  # we are using json anyway.
 
 import logging
 import importlib
+from threading import Timer
+
+import requests
+import zope.component
+
+from mtj.eve.tracker.ctrl import FlaskRunner
+from mtj.eve.tracker.ctrl import Options
+from mtj.eve.tracker.ctrl import main as original_main
+from mtj.eve.tracker.interfaces import ITowerManager
 
 from mtj.eve.tracker.ctrl import FlaskRunner, Options, main
 from mtj.flask.evetracker import app
@@ -99,6 +108,57 @@ class EveTrackerRunner(FlaskRunner):
         if target_reinforce:
             app.config['MTJ_DEFAULT_REINFORCE'] = target_reinforce
 
+        self.update_timeout = 3600
+
+    def _makeTimer(self, interval, func, args=None, kwargs=None, repeat=False):
+
+        def wrapper(func, a, kw):
+            if a is None:
+                a = []
+            if kw is None:
+                kw = {}
+            if repeat:
+                # requeue
+                self._makeTimer(interval, func, a, kw)
+
+            return func(*a, **kw)
+
+        timer = Timer(interval, wrapper, (func, args, kwargs))
+        timer.start()
+
+    def managerImportAll(self):
+        manager = zope.component.getUtility(ITowerManager)
+        manager.importAll()
+
+    def initialize(self):
+        """
+        Also initialize the update task.
+        """
+
+        super(EveTrackerRunner, self).initialize()
+
+        def wrapped_thread_update():
+            # initialize the thread local stuff.
+            super(EveTrackerRunner, self).initialize()
+            self.managerImportAll()
+
+            host = self.config['flask']['host']
+            port = self.config['flask']['port']
+            json_prefix = app.config.get('MTJPOSTRACKER_JSON_PREFIX')
+
+            target = 'http://%s:%s%s/reload' % (host, port, json_prefix)
+            data = '{"key": "%s"}' % app.config.get(
+                'MTJPOSTRACKER_ADMIN_KEY')
+
+            result = requests.post(target, data=data).content
+            logger.info('Triggered update: %s', result)
+
+        #self._makeTimer(30, wrapped_thread_update)
+
+
+def main(args=None, options=EveTrackerOptions(), app=app,
+        runner_factory=EveTrackerRunner, *a, **kw):
+    original_main(args, options, app, runner_factory, *a, **kw)
 
 if __name__ == "__main__":
     main(options=EveTrackerOptions(), app=app, runner_factory=EveTrackerRunner)
