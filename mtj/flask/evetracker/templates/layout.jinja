@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-
-    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='assets/css/jquery.tidy.table.mtj.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='assets/css/mtj.flask.evetracker.css') }}" rel="stylesheet">
@@ -58,7 +57,9 @@
         {% endfor %}
       </div>
 
-    {% block container %}{% endblock %}
+    {% block container %}
+    {{ contents }}
+    {% endblock %}
 
     </div> <!-- /container -->
 

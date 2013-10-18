@@ -2,7 +2,7 @@ import random
 import hmac
 from hashlib import sha1 as sha
 
-from mtj.flask.evetracker import user
+from mtj.flask.acl import flask
 
 csrf_key = '_authenticator'
 
@@ -34,7 +34,7 @@ class Authenticator(object):
         """
 
         if username is None:
-            username = user.getCurrentUser().login
+            username = flask.getCurrentUser().login
 
         return hmac.new(self.secret, username, sha).hexdigest()
 

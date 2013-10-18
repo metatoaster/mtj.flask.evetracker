@@ -12,11 +12,13 @@ from mtj.eve.tracker.ctrl import Options
 from mtj.eve.tracker.ctrl import main as original_main
 from mtj.eve.tracker.interfaces import ITowerManager
 
+from mtj.flask.acl.flask import getCurrentUser
+from mtj.flask.acl.base import SetupAcl, BaseAcl
+
 from mtj.eve.tracker.ctrl import FlaskRunner, Options, main
 from mtj.flask.evetracker import app
-from mtj.flask.evetracker import acl
 from mtj.flask.evetracker import csrf
-from mtj.flask.evetracker import user
+from mtj.flask.evetracker import hooks
 
 logger = logging.getLogger('mtj.flask.evetracker.ctrl')
 
@@ -72,11 +74,11 @@ class EveTrackerRunner(FlaskRunner):
         mode = users.get('mode')
 
         if mode == 'setup':
-            self.acl = acl.SetupAcl(users.get('setup_login'),
+            self.acl = SetupAcl(users.get('setup_login'),
                 users.get('setup_password'))
         elif mode == 'default':
             # Not really implemented
-            self.acl = acl.BaseAcl()
+            self.acl = BaseAcl()
         elif mode == 'class_path':
             mod, clsname = users.get('class_path').rsplit('.', 1)
             kwargs = users.get('kwargs') or {}
@@ -86,18 +88,22 @@ class EveTrackerRunner(FlaskRunner):
     def prepare(self, app):
         super(EveTrackerRunner, self).prepare(app)
 
+        self.acl(app)
+        app.before_request(hooks.before_request)
+        app.before_request(hooks.csrf_protect)
+
         # XXX registering blueprint permit here.
         json_prefix = app.config.get('MTJPOSTRACKER_JSON_PREFIX')
-        if json_prefix:
-            # XXX 'json_frontend' is magic
-            acl.flask.registerBlueprintPermit('json_frontend', 'pos_viewer')
+        #if json_prefix:
+        #    # XXX 'json_frontend' is magic
+        #    acl.flask.registerBlueprintPermit('json_frontend', 'pos_viewer')
 
-        app.config['MTJ_ACL'] = self.acl
         # persist the secret so a form rendered before restart works
         # afterwards, but this maybe a security feature...
+
         app.config['MTJ_CSRF'] = csrf.Authenticator()
         # allow overriding and not depending on import user
-        app.config['MTJ_CURRENT_USER'] = user.getCurrentUser
+        app.config['MTJ_CURRENT_USER'] = getCurrentUser
         app.config['MTJ_LOGGED_IN'] = self.config.get('acl').get('logged_in')
         if self.config.get('acl').get('backdoor'):
             app.config['MTJ_BACKDOOR'] = self.config.get('acl').get('backdoor')

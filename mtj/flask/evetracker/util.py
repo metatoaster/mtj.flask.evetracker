@@ -1,4 +1,4 @@
-from mtj.flask.evetracker.acl.flask import registerBlueprintPermit
+#from mtj.flask.evetracker.acl.flask import registerBlueprintPermit
 
 
 class ReverseProxied(object):
@@ -67,5 +67,5 @@ def register_blueprint_navbar(app, blueprint, url_prefix, permit=None, **kw):
         app.config['MTJ_FLASK_NAV'] = nav
     nav.append((blueprint.name, url_prefix))
 
-    if permit:
-        registerBlueprintPermit(blueprint, permit)
+    #if permit:
+    #    registerBlueprintPermit(blueprint, permit)

@@ -9,111 +9,21 @@ from werkzeug.exceptions import HTTPException
 
 from mtj.eve.tracker.frontend.flask import json_frontend
 
-from mtj.flask.evetracker.acl.flask import *
+from mtj.flask.acl.sql import SqlAcl
+from mtj.flask.acl.user import make_acl_front
+from mtj.flask.acl.base import anonymous
+from mtj.flask.acl.flask import getCurrentUser, getCurrentUserRoles
 
-from mtj.flask.evetracker import csrf
 from mtj.flask.evetracker import util
 from mtj.flask.evetracker import pos
-from mtj.flask.evetracker import user
 from mtj.flask.evetracker import audit
+
+acl_front = make_acl_front(layout='layout.jinja')
 
 app = Flask('mtj.flask.evetracker')
 # welp, I made the mistake of naming all filenames with .jinja..
 # so no autoescape.  Forcing it all to be true.
 app.jinja_env.autoescape = True
-
-public_blueprints = {
-    None: None,
-    'acl_front': None,
-    'json_frontend': ['json_frontend.reload_db'],
-}
-
-backdoored_blueprints = {
-    'json_frontend': ['json_frontend.overview'],
-}
-
-def check_backdoor():
-    if current_app.config.get('MTJ_BACKDOOR'):
-        try:
-            m, auth = request.headers.get('Authorization', '').split(' ', 1)
-        except ValueError:
-            m, auth = '', ''
-
-        paths = backdoored_blueprints.get(request.blueprint, None)
-        return (m.lower() == 'backdoor' and 
-                auth == current_app.config.get('MTJ_BACKDOOR') and
-                (paths is None or request.url_rule.endpoint in paths))
-    return False
-
-@app.before_request
-def before_request():
-    g.site_root = request.script_root or '/'
-
-    current_user = getCurrentUser()
-    if not current_user in (user.anonymous, None):
-        # User is logged in.
-        check_permissions()
-        return
-
-    # set the nav elements first.
-    g.navbar = []
-    g.aclbar = [('log in', '/acl/login')]
-
-    if request.blueprint in public_blueprints:
-        paths = public_blueprints[request.blueprint]
-        if paths is None or request.url_rule.endpoint in paths:
-            # Unspecified paths are all whitelists, or it's validated
-            # against the list of permissible endpoints.
-            return
-
-    if check_backdoor():
-        return
-
-    abort(401)
-
-@app.before_request
-def csrf_protect():
-    current_user = user.getCurrentUser()
-    if current_user in (user.anonymous, None):
-        # zero protection for anonymous users.
-        return
-
-    g.csrf_input = current_app.config['MTJ_CSRF'].render()
-
-    if request.method == 'POST':
-        token = request.form.get(csrf.csrf_key)
-        if token != current_app.config['MTJ_CSRF'].getSecretFor(
-                current_user.login):
-            # TODO make this 403 specific to token failure (tell user
-            # to reload the form in case of changes in hash.
-            abort(403)
-
-def check_permissions():
-    verifyBlueprintPermit()
-
-    navbar = []
-    for blueprint, prefix in app.config['MTJ_FLASK_NAV']:
-        permit = getBlueprintPermit(blueprint)
-        if permit is None or permit in getCurrentUserPermits():
-            navbar.append((blueprint, prefix))
-
-    set_json_root()
-    g.navbar = navbar
-    g.aclbar = [
-        (user.getCurrentUser().login, '/acl/current'),
-        ('logout', '/acl/logout'),
-    ]
-
-def set_json_root():
-    json_prefix = app.config.get('MTJPOSTRACKER_JSON_PREFIX', 'json')
-    # This is used by the javascript client.  Typically it is the same
-    # instance as this.
-    json_script_root = request.script_root
-    # Alternatively a different one may be specified, but must be
-    # accessible by the target end users.  This is for advanced usage.
-    # XXX expose this at the config/runner level.
-    # json_script_root = 'http://example.com/mtj.eve.tracker/frontend'
-    g.json_root = json_script_root + json_prefix
 
 @app.teardown_request
 def teardown_request(exception):
@@ -158,7 +68,7 @@ util.register_blueprint_navbar(app, pos.tower, url_prefix='/tower',
 util.register_blueprint_navbar(app, audit.audit, url_prefix='/audit',
     permit='audit_viewer')
 
-app.register_blueprint(user.acl_front, url_prefix='/acl')
+app.register_blueprint(acl_front, url_prefix='/acl')
 
 app.wsgi_app = util.ReverseProxied(app.wsgi_app)
 

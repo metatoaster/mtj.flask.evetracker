@@ -2,7 +2,7 @@ from unittest import TestCase, TestSuite, makeSuite
 from flask import Flask, session, request
 from werkzeug.exceptions import Forbidden
 
-from mtj.flask.evetracker import check_backdoor
+from mtj.flask.evetracker.hooks import check_backdoor
 from mtj.eve.tracker.frontend.flask import json_frontend
 
 
