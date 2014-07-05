@@ -9,12 +9,12 @@ from flask.ext.principal import identity_changed, identity_loaded
 from flask.ext.principal import Identity, RoleNeed, Principal
 
 from mtj.flask.acl.base import BaseUser, BaseAcl
+from mtj.flask.acl import csrf
 
 from mtj.eve.tracker.interfaces import ITrackerBackend
 import mtj.flask.evetracker
 
 from mtj.flask.evetracker import audit
-from mtj.flask.evetracker import csrf
 
 from mtj.eve.tracker.tests import base
 

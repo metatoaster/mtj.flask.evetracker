@@ -2,8 +2,7 @@ from flask import g, request, current_app, abort
 
 from mtj.flask.acl.flask import getCurrentUser
 from mtj.flask.acl.base import anonymous
-
-from . import csrf
+from mtj.flask.acl import csrf
 
 public_blueprints = {
     None: None,

@@ -14,10 +14,10 @@ from mtj.eve.tracker.interfaces import ITowerManager
 
 from mtj.flask.acl.flask import getCurrentUser
 from mtj.flask.acl.base import SetupAcl, BaseAcl
+from mtj.flask.acl import csrf
 
 from mtj.eve.tracker.ctrl import FlaskRunner, Options, main
 from mtj.flask.evetracker import app
-from mtj.flask.evetracker import csrf
 from mtj.flask.evetracker import hooks
 
 logger = logging.getLogger('mtj.flask.evetracker.ctrl')
