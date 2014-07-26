@@ -50,7 +50,7 @@ def strontium_report(target_length=None):
     labels = backend.getAuditForTable('tower', category='label')
 
     att = [i for i in backend._towers.values()
-        if manager.getTowerApiTimestamp(i.id)]
+        if backend.getTowerApiTimestamp(i.id)]
     towers = [{
             'id': tower.id,
             'state': tower.stateName,
