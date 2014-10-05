@@ -29,6 +29,7 @@ class EveTrackerOptions(Options):
     default_config = {}
     default_config.update(Options.default_config)
     default_config.update({
+        # this is local to flask, thus no need to use ZCA.
         'users': {
             'mode': 'default',
             'setup_login': 'admin',
@@ -39,9 +40,6 @@ class EveTrackerOptions(Options):
         'acl': {
             'backdoor': None,
             'logged_in': 'logged_in',
-        },
-        'defaults': {
-            'target_reinforce': None,
         },
     })
 
@@ -58,9 +56,6 @@ class EveTrackerOptions(Options):
         'acl': {
             'backdoor': basestring,
             'logged_in': basestring,
-        },
-        'defaults': {
-            'target_reinforce': int,
         },
     })
 
